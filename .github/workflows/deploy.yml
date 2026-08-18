@@ -37,8 +37,9 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
           local-dir: ./dist/
-          # Hostinger FTP accounts are usually chrooted to public_html — use ./ not /public_html/
-          server-dir: ${{ secrets.FTP_SERVER_DIR || './' }}
+          # Hostinger: site files live in domains/<domain>/public_html/
+          # Override via GitHub secret FTP_SERVER_DIR if your FTP root differs.
+          server-dir: ${{ secrets.FTP_SERVER_DIR || '/domains/jworldclothes.com/public_html/' }}
           dangerous-clean-slate: false
           log-level: standard
           exclude: |
