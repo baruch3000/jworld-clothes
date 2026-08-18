@@ -18,16 +18,25 @@ export function AboutPage() {
   return (
     <LegalLayout title="About Us">
       <p>
-        J-World Clothes is a curated fashion discovery platform that helps you find the latest trends
-        in clothing, shoes, and accessories from top brands worldwide.
+        J-World Clothes is dedicated to customers who are looking for modest fashion — clothing
+        that is stylish, well-made, and aligned with values of coverage and elegance.
       </p>
       <p>
-        We carefully select products across Men, Women, Kids, and Baby categories, making it easy
-        to browse, compare, and shop directly with trusted merchants.
+        We carefully curate products from well-known international brands, selecting pieces that
+        fit a modest wardrobe across Men, Women, Kids, and Baby. From long-line coats and layered
+        looks to covered silhouettes and everyday essentials, we bring together options that are
+        often hard to find in one place.
       </p>
       <p>
-        Our mission is to simplify fashion shopping by bringing together the best affiliate deals
-        in one clean, modern experience — so you can focus on finding pieces you love.
+        Hundreds of millions of people around the world — and countless communities, families, and
+        faith groups — share this approach to dressing. Yet until now, there has been no dedicated
+        platform that brings modest style from trusted, recognisable brands into a single, easy
+        shopping experience.
+      </p>
+      <p>
+        J-World Clothes is built to fill that gap. Our mission is to make modest fashion from top
+        brands accessible, discoverable, and simple to shop — so you can find pieces you love
+        without compromise.
       </p>
     </LegalLayout>
   )

@@ -39,8 +39,8 @@ export function Header({ searchValue, onSearchChange }: HeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-brand-200 bg-brand-50/95 backdrop-blur-md">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+    <header className="sticky top-0 z-50 overflow-visible border-b border-brand-200 bg-brand-50/95 backdrop-blur-md">
+      <div className="mx-auto max-w-7xl overflow-visible px-4 sm:px-6">
         <div className="flex h-[4.5rem] items-center justify-between gap-4 md:h-20">
           <Link
             to="/"
@@ -97,7 +97,7 @@ export function Header({ searchValue, onSearchChange }: HeaderProps) {
           {SITE_PRICE_NOTICE}
         </p>
 
-        <nav className="hidden border-t border-brand-200 md:block">
+        <nav className="relative z-[60] hidden overflow-visible border-t border-brand-200 md:block">
           <NavCategoryMenu categories={NAV_CATEGORIES} />
         </nav>
       </div>

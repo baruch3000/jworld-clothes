@@ -38,8 +38,8 @@ function DesktopNavItem({ category }: { category: Category }) {
         <ChevronDown className="h-3.5 w-3.5 opacity-50 transition group-hover:rotate-180" />
       </Link>
 
-      <div className="pointer-events-none invisible absolute left-0 top-full z-50 min-w-[240px] pt-1 opacity-0 transition group-hover:pointer-events-auto group-hover:visible group-hover:opacity-100">
-        <div className="border border-brand-200 bg-white py-1 shadow-lg">
+      <div className="pointer-events-none invisible absolute left-0 top-full z-[70] min-w-[240px] pt-2 opacity-0 transition group-hover:pointer-events-auto group-hover:visible group-hover:opacity-100">
+        <div className="border border-brand-200 bg-white py-1 shadow-xl">
           <Link
             to={href}
             className="block px-4 py-2.5 text-sm font-semibold text-brand-900 transition hover:bg-brand-50"
@@ -121,7 +121,7 @@ export function NavCategoryMenu({
   }
 
   return (
-    <ul className="flex items-center gap-1 overflow-x-auto py-2">
+    <ul className="flex items-center gap-1 overflow-visible py-2">
       {categories.map((cat) => (
         <DesktopNavItem key={cat} category={cat} />
       ))}
