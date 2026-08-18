@@ -53,6 +53,7 @@ export interface ProductFilters {
   categories: Category[]
   sizes: string[]
   brands: string[]
+  subcategories: string[]
   priceMin: number
   priceMax: number
   onSaleOnly: boolean

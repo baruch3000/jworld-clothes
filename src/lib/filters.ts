@@ -46,6 +46,12 @@ export function filterProducts(
     result = result.filter((p) => filters.brands.includes(p.brand))
   }
 
+  if (filters.subcategories.length > 0) {
+    result = result.filter(
+      (p) => p.subcategory != null && filters.subcategories.includes(p.subcategory)
+    )
+  }
+
   result = result.filter((p) => {
     if (!convertPrice) {
       return productMatchesPriceFilter(p, filters.priceMin, filters.priceMax)
@@ -99,6 +105,7 @@ export const DEFAULT_FILTERS: ProductFilters = {
   categories: [],
   sizes: [],
   brands: [],
+  subcategories: [],
   priceMin: 0,
   priceMax: 500,
   onSaleOnly: false,

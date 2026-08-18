@@ -30,7 +30,7 @@ export function ProductCard({ product }: ProductCardProps) {
   }
 
   return (
-    <article className="group animate-fade-in flex flex-col">
+    <article className="group animate-fade-in flex h-full flex-col">
       <div className="relative aspect-[3/4] overflow-hidden bg-brand-100">
         <a
           href={redirectPath}
@@ -148,7 +148,7 @@ export function ProductCard({ product }: ProductCardProps) {
           href={redirectPath}
           onClick={handleAffiliateClick}
           rel="noopener noreferrer sponsored"
-          className="mt-3 flex items-center justify-center gap-2 border border-brand-900 bg-brand-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-brand-800"
+          className="mt-auto flex items-center justify-center gap-2 border border-brand-900 bg-brand-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-brand-800"
         >
           Check Current Price &amp; Buy
           <ExternalLink className="h-3.5 w-3.5" />

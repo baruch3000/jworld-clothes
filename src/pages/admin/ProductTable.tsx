@@ -40,6 +40,7 @@ export function ProductTable({ onEdit }: ProductTableProps) {
       return (
         product.title.toLowerCase().includes(q) ||
         product.brand.toLowerCase().includes(q) ||
+        (product.subcategory?.toLowerCase().includes(q) ?? false) ||
         getProductCategories(product).some((cat) =>
           CATEGORY_LABELS[cat].toLowerCase().includes(q)
         )
@@ -127,8 +128,13 @@ export function ProductTable({ onEdit }: ProductTableProps) {
                   <div className="min-w-0 flex-1">
                     <p className="line-clamp-2 text-sm font-medium leading-snug">{product.title}</p>
                     <p className="mt-0.5 text-xs text-brand-800/50">
-                      {product.brand ? `${product.brand} · ` : ''}
-                      {formatProductCategories(product)}
+                      {[
+                        product.brand,
+                        formatProductCategories(product),
+                        product.subcategory,
+                      ]
+                        .filter(Boolean)
+                        .join(' · ')}
                     </p>
                   </div>
                 </div>

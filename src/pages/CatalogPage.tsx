@@ -4,6 +4,7 @@ import { useCatalog } from '../context/CatalogContext'
 import { useCurrency } from '../context/CurrencyContext'
 import { filterProducts, DEFAULT_FILTERS, isOnSale } from '../lib/filters'
 import { getCatalogDisplayPriceRange } from '../lib/exchangeRates'
+import { getSubcategoriesForCategories } from '../lib/subcategories'
 import { getAllBrands } from '../lib/storage'
 import { ProductGrid } from '../components/products/ProductGrid'
 import { FilterSidebar, FilterDrawer, MobileFilterBar } from '../components/filters/FilterPanel'
@@ -47,6 +48,21 @@ export function CatalogPage({ title, subtitle, presetFilters, filterFn }: Catalo
     return list
   }, [products, filterFn])
 
+  const availableSubcategories = useMemo(() => {
+    const presetCats = presetFilters?.categories ?? []
+    const fromConfig =
+      presetCats.length > 0 ? getSubcategoriesForCategories(presetCats) : []
+    if (fromConfig.length > 0) return fromConfig
+
+    return [
+      ...new Set(
+        baseProducts
+          .map((p) => p.subcategory)
+          .filter((sub): sub is string => Boolean(sub))
+      ),
+    ].sort((a, b) => a.localeCompare(b))
+  }, [presetFilters?.categories, baseProducts])
+
   const filtered = useMemo(
     () => filterProducts(baseProducts, filters, convertPrice),
     [baseProducts, filters, convertPrice]
@@ -68,6 +84,7 @@ export function CatalogPage({ title, subtitle, presetFilters, filterFn }: Catalo
           filters={filters}
           onChange={setFilters}
           availableBrands={brands}
+          availableSubcategories={availableSubcategories}
           priceRange={priceRange}
           resultCount={filtered.length}
           displayCurrency={displayCurrency}
@@ -84,6 +101,7 @@ export function CatalogPage({ title, subtitle, presetFilters, filterFn }: Catalo
         filters={filters}
         onChange={setFilters}
         availableBrands={brands}
+        availableSubcategories={availableSubcategories}
         priceRange={priceRange}
         resultCount={filtered.length}
         displayCurrency={displayCurrency}

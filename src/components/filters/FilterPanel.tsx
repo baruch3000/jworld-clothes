@@ -7,6 +7,7 @@ interface FilterPanelProps {
   filters: ProductFilters
   onChange: (filters: ProductFilters) => void
   availableBrands: string[]
+  availableSubcategories?: string[]
   priceRange: { min: number; max: number }
   resultCount: number
   displayCurrency?: Currency
@@ -34,6 +35,7 @@ function FilterContent({
   filters,
   onChange,
   availableBrands,
+  availableSubcategories = [],
   priceRange,
   resultCount,
   displayCurrency = 'USD',
@@ -50,6 +52,7 @@ function FilterContent({
       categories: [],
       sizes: [],
       brands: [],
+      subcategories: [],
       priceMin: priceRange.min,
       priceMax: priceRange.max,
       onSaleOnly: false,
@@ -60,6 +63,7 @@ function FilterContent({
     filters.categories.length > 0 ||
     filters.sizes.length > 0 ||
     filters.brands.length > 0 ||
+    filters.subcategories.length > 0 ||
     filters.onSaleOnly ||
     filters.priceMin > priceRange.min ||
     filters.priceMax < priceRange.max
@@ -141,6 +145,33 @@ function FilterContent({
           ))}
         </div>
       </div>
+
+      {availableSubcategories.length > 0 && (
+        <div>
+          <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider">Subcategory</h4>
+          <div className="flex flex-wrap gap-1.5">
+            {availableSubcategories.map((sub) => (
+              <button
+                key={sub}
+                type="button"
+                onClick={() =>
+                  onChange({
+                    ...filters,
+                    subcategories: toggleArrayItem(filters.subcategories, sub),
+                  })
+                }
+                className={`px-2.5 py-1 text-xs font-medium transition ${
+                  filters.subcategories.includes(sub)
+                    ? 'bg-brand-900 text-white'
+                    : 'border border-brand-200 text-brand-800/70 hover:border-brand-800'
+                }`}
+              >
+                {sub}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div>
         <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider">Brand</h4>

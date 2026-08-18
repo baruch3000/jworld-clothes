@@ -7,6 +7,10 @@ import {
   getProductCategories,
   normalizeProductCategories,
 } from '../../lib/productCategories'
+import {
+  getSubcategoriesForCategories,
+  isSubcategoryValidForCategories,
+} from '../../lib/subcategories'
 import { CURRENCY_LABELS } from '../../lib/pricing'
 import { ImagePasteZone } from './ImagePasteZone'
 import { generateId, getAllBrands, addCustomBrand } from '../../lib/storage'
@@ -143,12 +147,18 @@ export function ProductForm({ editProduct, onSaved, onCancel }: ProductFormProps
       if (current.includes(cat)) {
         if (current.length === 1) return prev
         const next = current.filter((c) => c !== cat)
-        return { ...prev, categories: next, category: next[0] }
+        const subcategory = isSubcategoryValidForCategories(prev.subcategory, next)
+          ? prev.subcategory
+          : undefined
+        return { ...prev, categories: next, category: next[0], subcategory }
       }
 
       const next =
         current.length >= 2 ? [current[0], cat] : [...current, cat]
-      return { ...prev, categories: next, category: next[0] }
+      const subcategory = isSubcategoryValidForCategories(prev.subcategory, next)
+        ? prev.subcategory
+        : undefined
+      return { ...prev, categories: next, category: next[0], subcategory }
     })
   }
 
@@ -156,6 +166,7 @@ export function ProductForm({ editProduct, onSaved, onCancel }: ProductFormProps
     form.categories?.length ? form.categories : [form.category],
     form.category
   )
+  const subcategoryOptions = getSubcategoriesForCategories(selectedCategories)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -501,6 +512,41 @@ export function ProductForm({ editProduct, onSaved, onCancel }: ProductFormProps
           Select 1–2 categories. Product appears on both category pages.
         </p>
       </div>
+
+      {subcategoryOptions.length > 0 && (
+        <div>
+          <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">
+            Subcategory <span className="font-normal normal-case text-brand-800/40">(optional)</span>
+          </label>
+          <div className="flex flex-wrap gap-1.5">
+            <button
+              type="button"
+              onClick={() => update('subcategory', undefined)}
+              className={`px-3 py-1.5 text-xs font-medium transition ${
+                !form.subcategory
+                  ? 'bg-brand-900 text-white'
+                  : 'border border-brand-200 hover:border-brand-800'
+              }`}
+            >
+              None
+            </button>
+            {subcategoryOptions.map((sub) => (
+              <button
+                key={sub}
+                type="button"
+                onClick={() => update('subcategory', sub)}
+                className={`px-3 py-1.5 text-xs font-medium transition ${
+                  form.subcategory === sub
+                    ? 'bg-brand-900 text-white'
+                    : 'border border-brand-200 hover:border-brand-800'
+                }`}
+              >
+                {sub}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div>
         <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">
