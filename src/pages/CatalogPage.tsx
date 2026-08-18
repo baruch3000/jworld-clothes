@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { Product, ProductFilters, Category } from '../types/product'
 import { useCatalog } from '../context/CatalogContext'
-import { filterProducts, getPriceRange, DEFAULT_FILTERS, isOnSale } from '../lib/filters'
+import { useCurrency } from '../context/CurrencyContext'
+import { filterProducts, DEFAULT_FILTERS, isOnSale } from '../lib/filters'
+import { getCatalogDisplayPriceRange } from '../lib/exchangeRates'
 import { getAllBrands } from '../lib/storage'
 import { ProductGrid } from '../components/products/ProductGrid'
 import { FilterSidebar, FilterDrawer, MobileFilterBar } from '../components/filters/FilterPanel'
@@ -15,7 +17,11 @@ interface CatalogPageProps {
 
 export function CatalogPage({ title, subtitle, presetFilters, filterFn }: CatalogPageProps) {
   const { products } = useCatalog()
-  const priceRange = useMemo(() => getPriceRange(products), [products])
+  const { convertPrice, displayCurrency, rates } = useCurrency()
+  const priceRange = useMemo(
+    () => getCatalogDisplayPriceRange(products, displayCurrency, rates),
+    [products, displayCurrency, rates]
+  )
   const brands = useMemo(() => getAllBrands(products), [products])
 
   const [filters, setFilters] = useState<ProductFilters>(() => ({
@@ -33,7 +39,7 @@ export function CatalogPage({ title, subtitle, presetFilters, filterFn }: Catalo
       priceMin: priceRange.min,
       priceMax: priceRange.max,
     }))
-  }, [presetFilters, priceRange.min, priceRange.max])
+  }, [presetFilters, priceRange.min, priceRange.max, displayCurrency])
 
   const baseProducts = useMemo(() => {
     let list = products
@@ -42,8 +48,8 @@ export function CatalogPage({ title, subtitle, presetFilters, filterFn }: Catalo
   }, [products, filterFn])
 
   const filtered = useMemo(
-    () => filterProducts(baseProducts, filters),
-    [baseProducts, filters]
+    () => filterProducts(baseProducts, filters, convertPrice),
+    [baseProducts, filters, convertPrice]
   )
 
   return (
@@ -64,6 +70,7 @@ export function CatalogPage({ title, subtitle, presetFilters, filterFn }: Catalo
           availableBrands={brands}
           priceRange={priceRange}
           resultCount={filtered.length}
+          displayCurrency={displayCurrency}
         />
 
         <div className="flex-1 min-w-0">
@@ -79,6 +86,7 @@ export function CatalogPage({ title, subtitle, presetFilters, filterFn }: Catalo
         availableBrands={brands}
         priceRange={priceRange}
         resultCount={filtered.length}
+        displayCurrency={displayCurrency}
       />
     </div>
   )

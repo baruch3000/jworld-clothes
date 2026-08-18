@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { SlidersHorizontal } from 'lucide-react'
-import type { ProductFilters, SortOption } from '../../types/product'
+import type { ProductFilters, SortOption, Currency } from '../../types/product'
 import { CATEGORY_LABELS, SIZE_OPTIONS, type Category } from '../../types/product'
 
 interface FilterPanelProps {
@@ -9,6 +9,7 @@ interface FilterPanelProps {
   availableBrands: string[]
   priceRange: { min: number; max: number }
   resultCount: number
+  displayCurrency?: Currency
 }
 
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
@@ -29,7 +30,14 @@ const ALL_SIZES = [
   ...SIZE_OPTIONS.baby,
 ]
 
-function FilterContent({ filters, onChange, availableBrands, priceRange, resultCount }: FilterPanelProps) {
+function FilterContent({
+  filters,
+  onChange,
+  availableBrands,
+  priceRange,
+  resultCount,
+  displayCurrency = 'USD',
+}: FilterPanelProps) {
   const [brandSearch, setBrandSearch] = useState('')
   const [customBrand, setCustomBrand] = useState('')
 
@@ -217,7 +225,9 @@ function FilterContent({ filters, onChange, availableBrands, priceRange, resultC
       </div>
 
       <div>
-        <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider">Price Range</h4>
+        <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider">
+          Price Range ({displayCurrency})
+        </h4>
         <div className="flex items-center gap-2">
           <input
             type="number"

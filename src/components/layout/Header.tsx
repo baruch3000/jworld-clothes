@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { CATEGORY_LABELS, type Category } from '../../types/product'
 import { useWishlist } from '../../context/WishlistContext'
 import { SiteLogo } from '../ui/SiteLogo'
+import { CurrencySelector } from '../ui/CurrencySelector'
 
 const NAV_CATEGORIES: Category[] = [
   'men',
@@ -63,6 +64,9 @@ export function Header({ searchValue, onSearchChange }: HeaderProps) {
           </form>
 
           <div className="flex items-center gap-3">
+            <div className="hidden sm:block">
+              <CurrencySelector />
+            </div>
             <Link
               to="/wishlist"
               className="relative flex h-9 w-9 items-center justify-center transition hover:text-accent"
@@ -106,6 +110,9 @@ export function Header({ searchValue, onSearchChange }: HeaderProps) {
       {mobileOpen && (
         <div className="border-t border-brand-200 bg-brand-50 md:hidden animate-fade-in">
           <form onSubmit={handleSearchSubmit} className="border-b border-brand-200 p-4">
+            <div className="mb-3 flex justify-end sm:hidden">
+              <CurrencySelector />
+            </div>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-800/40" />
               <input

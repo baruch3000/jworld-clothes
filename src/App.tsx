@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { CatalogProvider } from './context/CatalogContext'
 import { WishlistProvider } from './context/WishlistContext'
+import { CurrencyProvider } from './context/CurrencyContext'
 import { Layout } from './components/layout/Layout'
 import { HomePage } from './pages/HomePage'
 import { CategoryPage } from './pages/CategoryPage'
@@ -23,7 +24,8 @@ export default function App() {
   return (
     <BrowserRouter>
       <CatalogProvider>
-        <WishlistProvider>
+        <CurrencyProvider>
+          <WishlistProvider>
           <Routes>
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/go/:productId" element={<RedirectPage />} />
@@ -42,7 +44,8 @@ export default function App() {
               <Route path="affiliate-disclosure" element={<AffiliateDisclosurePage />} />
             </Route>
           </Routes>
-        </WishlistProvider>
+          </WishlistProvider>
+        </CurrencyProvider>
       </CatalogProvider>
     </BrowserRouter>
   )

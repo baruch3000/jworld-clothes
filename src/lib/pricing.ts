@@ -3,12 +3,14 @@ import type { Currency, PriceType, Product } from '../types/product'
 export const CURRENCY_LABELS: Record<Currency, string> = {
   USD: '$ USD',
   EUR: '€ EUR',
+  GBP: '£ GBP',
   ILS: '₪ ILS',
 }
 
 export const CURRENCY_LOCALE: Record<Currency, string> = {
   USD: 'en-US',
   EUR: 'de-DE',
+  GBP: 'en-GB',
   ILS: 'he-IL',
 }
 

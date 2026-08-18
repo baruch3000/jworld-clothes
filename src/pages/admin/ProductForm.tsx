@@ -6,6 +6,7 @@ import { CURRENCY_LABELS } from '../../lib/pricing'
 import { ImagePasteZone } from './ImagePasteZone'
 import { generateId, getAllBrands, addCustomBrand } from '../../lib/storage'
 import { useCatalog } from '../../context/CatalogContext'
+import { parseAffiliateInput } from '../../lib/affiliateLinkParse'
 import { Zap } from 'lucide-react'
 
 const CATEGORIES = Object.keys(CATEGORY_LABELS).filter(
@@ -25,7 +26,7 @@ interface ProductFormProps {
   onCancel?: () => void
 }
 
-const CURRENCIES: Currency[] = ['USD', 'EUR', 'ILS']
+const CURRENCIES: Currency[] = ['USD', 'EUR', 'GBP', 'ILS']
 
 const emptyForm = (): Omit<Product, 'id' | 'createdAt' | 'updatedAt'> => ({
   title: '',
@@ -52,6 +53,38 @@ export function ProductForm({ editProduct, onSaved, onCancel }: ProductFormProps
   const [form, setForm] = useState(emptyForm())
   const [savedFlash, setSavedFlash] = useState(false)
   const [imageError, setImageError] = useState<string | null>(null)
+  const [affiliateHint, setAffiliateHint] = useState<string | null>(null)
+
+  const applyAffiliateInput = (raw: string, autoFillTitle = false) => {
+    const parsed = parseAffiliateInput(raw)
+    if (!parsed) {
+      update('affiliateUrl', raw)
+      setAffiliateHint(null)
+      return false
+    }
+
+    setForm((prev) => {
+      const next = { ...prev, affiliateUrl: parsed.url }
+      if (autoFillTitle && parsed.title && !prev.title.trim()) {
+        next.title = parsed.title
+        if (!prev.brand.trim()) {
+          const byMatch = parsed.title.match(/\bBy\s+(.+)$/i)
+          if (byMatch?.[1]) next.brand = byMatch[1].trim()
+        }
+      }
+      return next
+    })
+    setAffiliateHint('Affiliate link extracted — tracking URL saved.')
+    return true
+  }
+
+  const handleAffiliatePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const pasted = e.clipboardData.getData('text')
+    if (!pasted.includes('href=') && !pasted.includes('<a')) return
+
+    e.preventDefault()
+    applyAffiliateInput(pasted, true)
+  }
 
   useEffect(() => {
     if (editProduct) {
@@ -97,7 +130,13 @@ export function ProductForm({ editProduct, onSaved, onCancel }: ProductFormProps
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!form.title || !form.brand || !form.affiliateUrl || !form.imageUrl) return
+
+    const parsedAffiliate = parseAffiliateInput(form.affiliateUrl)
+    if (!parsedAffiliate) return
+
+    const normalizedAffiliateUrl = parsedAffiliate.url
+
+    if (!form.title || !form.brand || !normalizedAffiliateUrl || !form.imageUrl) return
     if (!form.originalPrice || form.originalPrice <= 0) return
 
     if (form.imageUrl.startsWith('data:') && form.imageUrl.length > 50_000) {
@@ -114,6 +153,7 @@ export function ProductForm({ editProduct, onSaved, onCancel }: ProductFormProps
     const now = new Date().toISOString()
     const productData: Product = {
       ...form,
+      affiliateUrl: normalizedAffiliateUrl,
       currency: form.currency ?? 'USD',
       priceType: form.priceType ?? 'single',
       audience: categoryToAudience(form.category),
@@ -219,13 +259,24 @@ export function ProductForm({ editProduct, onSaved, onCancel }: ProductFormProps
             Affiliate / Source URL *
           </label>
           <input
-            type="url"
+            type="text"
             value={form.affiliateUrl}
-            onChange={(e) => update('affiliateUrl', e.target.value)}
+            onChange={(e) => {
+              update('affiliateUrl', e.target.value)
+              setAffiliateHint(null)
+            }}
+            onPaste={handleAffiliatePaste}
+            onBlur={(e) => applyAffiliateInput(e.target.value, true)}
             required
-            placeholder="Your affiliate link (Amazon, AliExpress, etc.)"
+            placeholder="Paste affiliate HTML or link (Linkshare, Amazon, etc.)"
             className="w-full border border-brand-200 px-3 py-2.5 text-sm outline-none focus:border-brand-800"
           />
+          {affiliateHint && (
+            <p className="mt-1 text-xs text-green-700">{affiliateHint}</p>
+          )}
+          <p className="mt-1 text-xs text-brand-800/50">
+            Paste the full HTML code from Linkshare / Rakuten — we extract the tracking link automatically.
+          </p>
         </div>
 
         <div className="sm:col-span-2 space-y-4 rounded border border-brand-200 bg-brand-50/50 p-4">

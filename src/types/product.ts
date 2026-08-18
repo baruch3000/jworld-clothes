@@ -13,7 +13,7 @@ export type Audience = 'men' | 'women' | 'kids' | 'baby' | 'unisex'
 
 export type StockStatus = 'in_stock' | 'out_of_stock'
 
-export type Currency = 'USD' | 'EUR' | 'ILS'
+export type Currency = 'USD' | 'EUR' | 'GBP' | 'ILS'
 
 export type PriceType = 'single' | 'range'
 

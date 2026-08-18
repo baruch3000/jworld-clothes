@@ -1,7 +1,8 @@
 import { Heart, ExternalLink, Tag } from 'lucide-react'
 import type { Product } from '../../types/product'
-import { formatProductPrice, formatProductOriginalPrice, getAffiliateRedirectPath } from '../../lib/affiliate'
+import { getAffiliateRedirectPath } from '../../lib/affiliate'
 import { isOnSale } from '../../lib/filters'
+import { useCurrency } from '../../context/CurrencyContext'
 import {
   hasMerchantDiscountNotice,
   MERCHANT_DISCOUNT_BADGE,
@@ -17,6 +18,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { isWishlisted, toggle } = useWishlist()
+  const { formatProductPrice, formatProductOriginalPrice, isConverted } = useCurrency()
   const onSale = isOnSale(product)
   const showMerchantDiscount = hasMerchantDiscountNotice(product)
   const redirectPath = getAffiliateRedirectPath(product.id)
@@ -119,6 +121,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
         <p className="text-[11px] leading-tight text-brand-800/45">
           {PRICE_DISCLAIMER}
+          {isConverted(product) && ' Converted at today\'s exchange rate.'}
         </p>
 
         {product.sizes.length > 0 && (

@@ -1,7 +1,9 @@
-import type { Product, ProductFilters } from '../types/product'
+import type { Product, ProductFilters, Currency } from '../types/product'
 import {
   getEffectivePrice,
+  getEffectivePriceMax,
   getDiscountPercent,
+  getProductCurrency,
   isOnSale,
   productMatchesPriceFilter,
   getCatalogPriceRange,
@@ -9,7 +11,13 @@ import {
 
 export { getEffectivePrice, getDiscountPercent, isOnSale, getCatalogPriceRange as getPriceRange }
 
-export function filterProducts(products: Product[], filters: ProductFilters): Product[] {
+export type PriceConvertFn = (amount: number, from: Currency) => number
+
+export function filterProducts(
+  products: Product[],
+  filters: ProductFilters,
+  convertPrice?: PriceConvertFn
+): Product[] {
   let result = [...products]
 
   if (filters.search.trim()) {
@@ -35,9 +43,15 @@ export function filterProducts(products: Product[], filters: ProductFilters): Pr
     result = result.filter((p) => filters.brands.includes(p.brand))
   }
 
-  result = result.filter((p) =>
-    productMatchesPriceFilter(p, filters.priceMin, filters.priceMax)
-  )
+  result = result.filter((p) => {
+    if (!convertPrice) {
+      return productMatchesPriceFilter(p, filters.priceMin, filters.priceMax)
+    }
+    const currency = getProductCurrency(p)
+    const min = convertPrice(getEffectivePrice(p), currency)
+    const max = convertPrice(getEffectivePriceMax(p), currency)
+    return min <= filters.priceMax && max >= filters.priceMin
+  })
 
   if (filters.onSaleOnly) {
     result = result.filter(isOnSale)
@@ -48,10 +62,26 @@ export function filterProducts(products: Product[], filters: ProductFilters): Pr
       result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       break
     case 'price_asc':
-      result.sort((a, b) => getEffectivePrice(a) - getEffectivePrice(b))
+      result.sort((a, b) => {
+        if (convertPrice) {
+          return (
+            convertPrice(getEffectivePrice(a), getProductCurrency(a)) -
+            convertPrice(getEffectivePrice(b), getProductCurrency(b))
+          )
+        }
+        return getEffectivePrice(a) - getEffectivePrice(b)
+      })
       break
     case 'price_desc':
-      result.sort((a, b) => getEffectivePrice(b) - getEffectivePrice(a))
+      result.sort((a, b) => {
+        if (convertPrice) {
+          return (
+            convertPrice(getEffectivePrice(b), getProductCurrency(b)) -
+            convertPrice(getEffectivePrice(a), getProductCurrency(a))
+          )
+        }
+        return getEffectivePrice(b) - getEffectivePrice(a)
+      })
       break
     case 'biggest_discount':
       result.sort((a, b) => getDiscountPercent(b) - getDiscountPercent(a))
