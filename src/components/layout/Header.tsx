@@ -1,10 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { Heart, Menu, Search, X } from 'lucide-react'
 import { useState } from 'react'
-import { CATEGORY_LABELS, type Category } from '../../types/product'
+import type { Category } from '../../types/product'
 import { useWishlist } from '../../context/WishlistContext'
 import { SiteLogo } from '../ui/SiteLogo'
 import { CurrencySelector } from '../ui/CurrencySelector'
+import { SITE_PRICE_NOTICE } from '../../lib/merchantDiscount'
+import { NavCategoryMenu } from './NavCategoryMenu'
 
 const NAV_CATEGORIES: Category[] = [
   'men',
@@ -91,19 +93,12 @@ export function Header({ searchValue, onSearchChange }: HeaderProps) {
           </div>
         </div>
 
+        <p className="-mt-1 border-t border-brand-200/60 pb-2 pt-2 text-center text-[11px] font-medium leading-snug tracking-wide text-brand-800/65 sm:text-xs">
+          {SITE_PRICE_NOTICE}
+        </p>
+
         <nav className="hidden border-t border-brand-200 md:block">
-          <ul className="flex items-center gap-1 overflow-x-auto py-2">
-            {NAV_CATEGORIES.map((cat) => (
-              <li key={cat}>
-                <Link
-                  to={cat === 'sale' ? '/sale' : cat === 'brands' ? '/brands' : `/category/${cat}`}
-                  className="whitespace-nowrap px-3 py-1.5 text-sm font-medium text-brand-800/70 transition hover:text-brand-900"
-                >
-                  {CATEGORY_LABELS[cat]}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <NavCategoryMenu categories={NAV_CATEGORIES} />
         </nav>
       </div>
 
@@ -125,19 +120,11 @@ export function Header({ searchValue, onSearchChange }: HeaderProps) {
             </div>
           </form>
           <nav className="p-4">
-            <ul className="space-y-1">
-              {NAV_CATEGORIES.map((cat) => (
-                <li key={cat}>
-                  <Link
-                    to={cat === 'sale' ? '/sale' : cat === 'brands' ? '/brands' : `/category/${cat}`}
-                    onClick={() => setMobileOpen(false)}
-                    className="block py-2.5 text-sm font-medium"
-                  >
-                    {CATEGORY_LABELS[cat]}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <NavCategoryMenu
+              categories={NAV_CATEGORIES}
+              variant="mobile"
+              onNavigate={() => setMobileOpen(false)}
+            />
           </nav>
         </div>
       )}

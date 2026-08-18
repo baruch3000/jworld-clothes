@@ -12,3 +12,6 @@ export const MERCHANT_DISCOUNT_NOTICE =
 
 export const PRICE_DISCLAIMER =
   '*Price subject to change. Click to check current price & availability'
+
+export const SITE_PRICE_NOTICE =
+  'Guide prices only — click any product for the live price, often lower at the store'
