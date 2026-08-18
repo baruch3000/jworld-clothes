@@ -2,6 +2,11 @@ import { useState, useEffect } from 'react'
 import type { Product, Category, Currency, PriceType } from '../../types/product'
 import { CATEGORY_LABELS, SIZE_OPTIONS } from '../../types/product'
 import { categoryToAudience } from '../../lib/category'
+import {
+  ASSIGNABLE_CATEGORIES,
+  getProductCategories,
+  normalizeProductCategories,
+} from '../../lib/productCategories'
 import { CURRENCY_LABELS } from '../../lib/pricing'
 import { ImagePasteZone } from './ImagePasteZone'
 import { generateId, getAllBrands, addCustomBrand } from '../../lib/storage'
@@ -9,9 +14,26 @@ import { useCatalog } from '../../context/CatalogContext'
 import { parseAffiliateInput } from '../../lib/affiliateLinkParse'
 import { Zap } from 'lucide-react'
 
-const CATEGORIES = Object.keys(CATEGORY_LABELS).filter(
-  (c) => c !== 'brands' && c !== 'sale'
-) as Category[]
+const CATEGORIES = ASSIGNABLE_CATEGORIES
+
+const emptyForm = (): Omit<Product, 'id' | 'createdAt' | 'updatedAt'> => ({
+  title: '',
+  brand: '',
+  category: 'women',
+  categories: ['women'],
+  audience: 'women',
+  currency: 'USD',
+  priceType: 'single',
+  originalPrice: 0,
+  originalPriceMax: undefined,
+  salePrice: undefined,
+  salePriceMax: undefined,
+  sizes: [],
+  imageUrl: '',
+  affiliateUrl: '',
+  inStock: true,
+  merchantDiscount: true,
+})
 
 const ALL_SIZE_PILLS = [
   ...SIZE_OPTIONS.clothing,
@@ -27,24 +49,6 @@ interface ProductFormProps {
 }
 
 const CURRENCIES: Currency[] = ['USD', 'EUR', 'GBP', 'ILS']
-
-const emptyForm = (): Omit<Product, 'id' | 'createdAt' | 'updatedAt'> => ({
-  title: '',
-  brand: '',
-  category: 'women',
-  audience: 'women',
-  currency: 'USD',
-  priceType: 'single',
-  originalPrice: 0,
-  originalPriceMax: undefined,
-  salePrice: undefined,
-  salePriceMax: undefined,
-  sizes: [],
-  imageUrl: '',
-  affiliateUrl: '',
-  inStock: true,
-  merchantDiscount: true,
-})
 
 export function ProductForm({ editProduct, onSaved, onCancel }: ProductFormProps) {
   const { products, addProduct, updateProduct } = useCatalog()
@@ -92,6 +96,7 @@ export function ProductForm({ editProduct, onSaved, onCancel }: ProductFormProps
         title: editProduct.title,
         brand: editProduct.brand,
         category: editProduct.category,
+        categories: getProductCategories(editProduct),
         audience: editProduct.audience,
         currency: editProduct.currency ?? 'USD',
         priceType: editProduct.priceType ?? 'single',
@@ -128,6 +133,30 @@ export function ProductForm({ editProduct, onSaved, onCancel }: ProductFormProps
     update('brand', value)
   }
 
+  const toggleCategory = (cat: Category) => {
+    setForm((prev) => {
+      const current = normalizeProductCategories(
+        prev.categories?.length ? prev.categories : [prev.category],
+        prev.category
+      )
+
+      if (current.includes(cat)) {
+        if (current.length === 1) return prev
+        const next = current.filter((c) => c !== cat)
+        return { ...prev, categories: next, category: next[0] }
+      }
+
+      const next =
+        current.length >= 2 ? [current[0], cat] : [...current, cat]
+      return { ...prev, categories: next, category: next[0] }
+    })
+  }
+
+  const selectedCategories = normalizeProductCategories(
+    form.categories?.length ? form.categories : [form.category],
+    form.category
+  )
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -136,7 +165,7 @@ export function ProductForm({ editProduct, onSaved, onCancel }: ProductFormProps
 
     const normalizedAffiliateUrl = parsedAffiliate.url
 
-    if (!form.title || !form.brand || !normalizedAffiliateUrl || !form.imageUrl) return
+    if (!form.title || !normalizedAffiliateUrl || !form.imageUrl) return
     if (!form.originalPrice || form.originalPrice <= 0) return
 
     if (form.imageUrl.startsWith('data:') && form.imageUrl.length > 50_000) {
@@ -151,12 +180,21 @@ export function ProductForm({ editProduct, onSaved, onCancel }: ProductFormProps
     if (isRange && (!form.originalPriceMax || form.originalPriceMax < form.originalPrice)) return
 
     const now = new Date().toISOString()
+    const categories = normalizeProductCategories(
+      form.categories?.length ? form.categories : [form.category],
+      form.category
+    )
+    const primaryCategory = categories[0]
+
     const productData: Product = {
       ...form,
+      brand: form.brand.trim(),
       affiliateUrl: normalizedAffiliateUrl,
+      category: primaryCategory,
+      categories,
       currency: form.currency ?? 'USD',
       priceType: form.priceType ?? 'single',
-      audience: categoryToAudience(form.category),
+      audience: categoryToAudience(primaryCategory),
       originalPriceMax: isRange ? form.originalPriceMax : undefined,
       salePrice: form.salePrice && form.salePrice > 0 ? form.salePrice : undefined,
       salePriceMax:
@@ -172,7 +210,9 @@ export function ProductForm({ editProduct, onSaved, onCancel }: ProductFormProps
       await addProduct(productData)
     }
 
-    addCustomBrand(form.brand)
+    if (form.brand.trim()) {
+      addCustomBrand(form.brand.trim())
+    }
 
     setSavedFlash(true)
     setTimeout(() => setSavedFlash(false), 2000)
@@ -224,14 +264,13 @@ export function ProductForm({ editProduct, onSaved, onCancel }: ProductFormProps
 
         <div className="relative sm:col-span-2">
           <label className="mb-1 block text-xs font-semibold uppercase tracking-wider">
-            Brand *
+            Brand <span className="font-normal normal-case text-brand-800/40">(optional)</span>
           </label>
           <input
             type="text"
             value={form.brand}
             onChange={(e) => handleBrandInput(e.target.value)}
-            required
-            placeholder="Type any brand name..."
+            placeholder="Leave empty if no known brand"
             className="w-full border border-brand-200 px-3 py-2.5 text-sm outline-none focus:border-brand-800"
           />
           {savedBrands.length > 0 && (
@@ -440,16 +479,16 @@ export function ProductForm({ editProduct, onSaved, onCancel }: ProductFormProps
 
       <div>
         <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">
-          Category
+          Categories <span className="font-normal normal-case text-brand-800/40">(up to 2)</span>
         </label>
         <div className="flex flex-wrap gap-1.5">
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
               type="button"
-              onClick={() => update('category', cat)}
+              onClick={() => toggleCategory(cat)}
               className={`px-3 py-1.5 text-xs font-medium transition ${
-                form.category === cat
+                selectedCategories.includes(cat)
                   ? 'bg-brand-900 text-white'
                   : 'border border-brand-200 hover:border-brand-800'
               }`}
@@ -458,6 +497,9 @@ export function ProductForm({ editProduct, onSaved, onCancel }: ProductFormProps
             </button>
           ))}
         </div>
+        <p className="mt-2 text-xs text-brand-800/50">
+          Select 1–2 categories. Product appears on both category pages.
+        </p>
       </div>
 
       <div>

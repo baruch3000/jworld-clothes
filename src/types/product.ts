@@ -22,6 +22,8 @@ export interface Product {
   title: string
   brand: string
   category: Category
+  /** Up to 2 categories — product appears in both category pages */
+  categories?: Category[]
   audience: Audience
   subcategory?: string
   currency?: Currency

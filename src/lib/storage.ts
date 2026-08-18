@@ -111,7 +111,7 @@ export function generateId(): string {
 }
 
 export function getUniqueBrands(products: Product[]): string[] {
-  return [...new Set(products.map((p) => p.brand))].sort()
+  return [...new Set(products.map((p) => p.brand).filter(Boolean))].sort()
 }
 
 export function getCustomBrands(): string[] {

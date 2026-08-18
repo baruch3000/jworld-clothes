@@ -88,9 +88,11 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
 
       <div className="mt-3 flex flex-1 flex-col gap-1.5">
-        <span className="text-xs font-medium uppercase tracking-widest text-brand-800/60">
-          {product.brand}
-        </span>
+        {product.brand.trim() && (
+          <span className="text-xs font-medium uppercase tracking-widest text-brand-800/60">
+            {product.brand}
+          </span>
+        )}
 
         <a
           href={redirectPath}

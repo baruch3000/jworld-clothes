@@ -8,6 +8,7 @@ import {
   productMatchesPriceFilter,
   getCatalogPriceRange,
 } from './pricing'
+import { getProductCategories, productInCategory } from './productCategories'
 
 export { getEffectivePrice, getDiscountPercent, isOnSale, getCatalogPriceRange as getPriceRange }
 
@@ -26,13 +27,15 @@ export function filterProducts(
       (p) =>
         p.title.toLowerCase().includes(q) ||
         p.brand.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q) ||
+        getProductCategories(p).some((c) => c.toLowerCase().includes(q)) ||
         (p.subcategory?.toLowerCase().includes(q) ?? false)
     )
   }
 
   if (filters.categories.length > 0) {
-    result = result.filter((p) => filters.categories.includes(p.category))
+    result = result.filter((p) =>
+      filters.categories.some((cat) => productInCategory(p, cat))
+    )
   }
 
   if (filters.sizes.length > 0) {

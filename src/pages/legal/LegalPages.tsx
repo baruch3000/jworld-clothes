@@ -39,8 +39,8 @@ export function ContactPage() {
       <p>We&apos;d love to hear from you. Reach out with questions, feedback, or partnership inquiries.</p>
       <p>
         <strong>Email:</strong>{' '}
-        <a href="mailto:jworldclothes@gmail.com" className="text-accent hover:text-accent-hover">
-          jworldclothes@gmail.com
+        <a href="mailto:info@jworldclothes.com" className="text-accent hover:text-accent-hover">
+          info@jworldclothes.com
         </a>
       </p>
       <p>
@@ -77,7 +77,7 @@ export function PrivacyPage() {
       <h2 className="font-display text-xl font-semibold text-brand-900">Contact</h2>
       <p>
         For privacy-related questions, contact us at{' '}
-        <a href="mailto:jworldclothes@gmail.com" className="text-accent">jworldclothes@gmail.com</a>.
+        <a href="mailto:info@jworldclothes.com" className="text-accent">info@jworldclothes.com</a>.
       </p>
     </LegalLayout>
   )
@@ -128,7 +128,7 @@ export function AffiliateDisclosurePage() {
       </p>
       <p>
         If you have questions about our affiliate partnerships, please contact us at{' '}
-        <a href="mailto:jworldclothes@gmail.com" className="text-accent">jworldclothes@gmail.com</a>.
+        <a href="mailto:info@jworldclothes.com" className="text-accent">info@jworldclothes.com</a>.
       </p>
     </LegalLayout>
   )
