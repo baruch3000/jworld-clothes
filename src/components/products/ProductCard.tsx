@@ -1,6 +1,6 @@
 import { Heart, ExternalLink, Tag } from 'lucide-react'
 import type { Product } from '../../types/product'
-import { getAffiliateRedirectPath } from '../../lib/affiliate'
+import { getAffiliateStoreUrl } from '../../lib/affiliate'
 import { isOnSale } from '../../lib/filters'
 import { useCurrency } from '../../context/CurrencyContext'
 import {
@@ -21,20 +21,15 @@ export function ProductCard({ product }: ProductCardProps) {
   const { formatProductPrice, formatProductOriginalPrice, isConverted } = useCurrency()
   const onSale = isOnSale(product)
   const showMerchantDiscount = hasMerchantDiscountNotice(product)
-  const redirectPath = getAffiliateRedirectPath(product.id)
+  const storeUrl = getAffiliateStoreUrl(product)
   const originalPriceLabel = formatProductOriginalPrice(product)
-
-  const handleAffiliateClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    window.open(redirectPath, '_blank', 'noopener,noreferrer')
-  }
 
   return (
     <article className="group animate-fade-in flex h-full flex-col">
       <div className="relative aspect-[3/4] overflow-hidden bg-brand-100">
         <a
-          href={redirectPath}
-          onClick={handleAffiliateClick}
+          href={storeUrl}
+          target="_blank"
           rel="noopener noreferrer sponsored"
           className="block h-full w-full"
           aria-label={`View ${product.title} on merchant site`}
@@ -95,8 +90,8 @@ export function ProductCard({ product }: ProductCardProps) {
         )}
 
         <a
-          href={redirectPath}
-          onClick={handleAffiliateClick}
+          href={storeUrl}
+          target="_blank"
           rel="noopener noreferrer sponsored"
           className="font-display text-base font-medium leading-snug text-brand-900 transition hover:text-accent line-clamp-2"
         >
@@ -145,8 +140,8 @@ export function ProductCard({ product }: ProductCardProps) {
         )}
 
         <a
-          href={redirectPath}
-          onClick={handleAffiliateClick}
+          href={storeUrl}
+          target="_blank"
           rel="noopener noreferrer sponsored"
           className="mt-auto flex items-center justify-center gap-2 border border-brand-900 bg-brand-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-brand-800"
         >
