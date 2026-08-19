@@ -3,15 +3,9 @@ import { ArrowRight } from 'lucide-react'
 import { useCatalog } from '../context/CatalogContext'
 import { ProductGrid } from '../components/products/ProductGrid'
 import { isOnSale } from '../lib/filters'
-import { CATEGORY_LABELS, type Category } from '../types/product'
-import { WomenCategoryGraphic } from '../components/home/WomenCategoryGraphic'
-
-const FEATURED_CATEGORIES: { key: Category; image?: string; graphic?: boolean }[] = [
-  { key: 'women', graphic: true },
-  { key: 'men', image: 'https://images.unsplash.com/photo-1617137968427-85924c800a22?w=600&h=400&fit=crop' },
-  { key: 'shoes', image: 'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=600&h=400&fit=crop' },
-  { key: 'sale', image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=600&h=400&fit=crop' },
-]
+import { CATEGORY_LABELS } from '../types/product'
+import { CategoryGraphicTile } from '../components/home/CategoryGraphicTile'
+import { GRAPHIC_CATEGORY_TILES } from '../components/home/categoryGraphics'
 
 export function HomePage() {
   const { products } = useCatalog()
@@ -48,30 +42,14 @@ export function HomePage() {
           Shop by Category
         </h2>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          {FEATURED_CATEGORIES.map(({ key, image, graphic }) => (
+          {GRAPHIC_CATEGORY_TILES.map(({ key, label, variant }) => (
             <Link
               key={key}
-              to={key === 'sale' ? '/sale' : `/category/${key}`}
+              to={`/category/${key}`}
               className="group relative aspect-[4/3] overflow-hidden"
               aria-label={CATEGORY_LABELS[key]}
             >
-              {graphic ? (
-                <WomenCategoryGraphic />
-              ) : (
-                <>
-                  <img
-                    src={image}
-                    alt={CATEGORY_LABELS[key]}
-                    loading="lazy"
-                    className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/60 to-transparent p-4">
-                    <span className="font-display text-lg font-semibold text-white">
-                      {CATEGORY_LABELS[key]}
-                    </span>
-                  </div>
-                </>
-              )}
+              <CategoryGraphicTile label={label} variant={variant} />
             </Link>
           ))}
         </div>
