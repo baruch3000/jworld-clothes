@@ -63,30 +63,91 @@ export function PrivacyPage() {
   return (
     <LegalLayout title="Privacy Policy">
       <p><strong>Last updated:</strong> August 2026</p>
+
+      <h2 className="font-display text-xl font-semibold text-brand-900">1. Introduction</h2>
       <p>
-        J-World Clothes (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) respects your privacy. This policy describes
-        how we collect, use, and protect information when you visit our website.
+        J-World Clothes (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) operates jworldclothes.com (the &quot;Site&quot;).
+        We are committed to protecting your privacy and ensuring transparency about how your data is
+        collected, used, and safeguarded.
       </p>
-      <h2 className="font-display text-xl font-semibold text-brand-900">Information We Collect</h2>
+
+      <h2 className="font-display text-xl font-semibold text-brand-900">2. Information We Collect</h2>
       <p>
-        We may collect anonymous usage data through analytics tools, including pages visited,
-        browser type, and device information. Product wishlist data is stored locally in your browser.
+        <strong>Automated &amp; Usage Data:</strong> When you visit our Site, we automatically collect
+        certain technical information via log files and analytics tools, including your IP address,
+        browser type, operating system, referring URLs, device information, and pages viewed.
       </p>
-      <h2 className="font-display text-xl font-semibold text-brand-900">How We Use Information</h2>
       <p>
-        We use collected information to improve our website, personalize your experience, and
-        understand how visitors interact with our catalog.
+        <strong>Local Storage:</strong> Wishlists and user interface preferences may be stored locally
+        within your browser session.
       </p>
-      <h2 className="font-display text-xl font-semibold text-brand-900">Third-Party Links</h2>
       <p>
-        Our site contains links to third-party merchant websites. We are not responsible for the
-        privacy practices of these external sites. Please review their privacy policies before
-        making a purchase.
+        <strong>Communications:</strong> If you contact us directly via email, we collect your email
+        address and any details provided in your inquiry.
       </p>
-      <h2 className="font-display text-xl font-semibold text-brand-900">Contact</h2>
+
+      <h2 className="font-display text-xl font-semibold text-brand-900">3. Cookies and Tracking Technologies</h2>
       <p>
-        For privacy-related questions, contact us at{' '}
-        <a href="mailto:info@jworldclothes.com" className="text-accent">info@jworldclothes.com</a>.
+        We use cookies, web beacons, and tracking pixels to ensure proper site functionality, analyze
+        traffic patterns, and track affiliate referrals.
+      </p>
+      <p>
+        <strong>Affiliate Cookies:</strong> When you click on outgoing product links on our Site,
+        third-party affiliate networks and merchant partners place tracking cookies in your browser to
+        verify qualifying purchases and assign referral commissions.
+      </p>
+      <p>
+        <strong>Managing Cookies:</strong> You can configure your browser settings to refuse cookies or
+        alert you when cookies are being sent. Note that some features of the Site may not function
+        properly without cookies enabled.
+      </p>
+
+      <h2 className="font-display text-xl font-semibold text-brand-900">4. Affiliate Disclaimer &amp; Commercial Relationships</h2>
+      <p>
+        J-World Clothes participates in various affiliate marketing programs designed to provide a means
+        for sites to earn advertising fees by linking to affiliated merchant websites. We may earn a
+        commission when you click on external links and complete purchases, at no additional cost to you.
+      </p>
+
+      <h2 className="font-display text-xl font-semibold text-brand-900">5. Third-Party Websites &amp; External Links</h2>
+      <p>
+        Our Site contains links to external retailers, brand partners, and affiliate networks. Once you
+        leave our Site, our Privacy Policy no longer applies. We have no control over and assume no
+        responsibility for the content, privacy policies, or practices of any third-party websites.
+      </p>
+
+      <h2 className="font-display text-xl font-semibold text-brand-900">6. User Data Rights (GDPR &amp; CCPA Compliance)</h2>
+      <p>
+        Depending on your location, you may have specific rights regarding your personal data, including:
+      </p>
+      <ul className="list-disc space-y-2 pl-6">
+        <li>The right to access, update, or request the deletion of any personal information we hold about you.</li>
+        <li>The right to opt out of certain automated tracking and cookie storage.</li>
+      </ul>
+      <p>To exercise any of these rights, please reach out via our contact email below.</p>
+
+      <h2 className="font-display text-xl font-semibold text-brand-900">7. Children&apos;s Privacy</h2>
+      <p>
+        Our Site offers family, children&apos;s, and modest fashion curation, but our services are intended
+        for adults. We do not knowingly collect personal identifiable information from children under
+        the age of 16.
+      </p>
+
+      <h2 className="font-display text-xl font-semibold text-brand-900">8. Changes to This Policy</h2>
+      <p>
+        We may update this Privacy Policy periodically. Any updates will be posted on this page with an
+        updated revision date.
+      </p>
+
+      <h2 className="font-display text-xl font-semibold text-brand-900">9. Contact Us</h2>
+      <p>
+        For any questions regarding this Privacy Policy or our data practices, please contact us at:
+      </p>
+      <p>
+        <strong>Email:</strong>{' '}
+        <a href="mailto:info@jworldclothes.com" className="text-accent hover:text-accent-hover">
+          info@jworldclothes.com
+        </a>
       </p>
     </LegalLayout>
   )
