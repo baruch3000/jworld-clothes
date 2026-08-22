@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ExternalLink, RefreshCw, Search, Trash2 } from 'lucide-react'
+import { ArrowDown, ArrowUp, ArrowUpDown, ExternalLink, RefreshCw, Search, Trash2 } from 'lucide-react'
 import type { Product } from '../../types/product'
 import { useCatalog } from '../../context/CatalogContext'
 import { fetchClickStats, type ClickStatsMap } from '../../lib/clickApi'
+import { LazyImage } from '../../components/ui/LazyImage'
 
-type LinkSort = 'newest' | 'oldest' | 'most_clicks' | 'least_clicks'
+type SortColumn = 'title' | 'link' | 'added' | 'clicks' | 'lastClick'
+type SortDirection = 'asc' | 'desc'
 
 interface LinkRow {
   product: Product
@@ -22,9 +24,49 @@ function formatDate(iso: string): string {
   })
 }
 
-function truncateUrl(url: string, max = 72): string {
+function truncateUrl(url: string, max = 56): string {
   if (url.length <= max) return url
   return `${url.slice(0, max - 3)}...`
+}
+
+function SortableHeader({
+  label,
+  column,
+  activeColumn,
+  direction,
+  onSort,
+  className = '',
+}: {
+  label: string
+  column: SortColumn
+  activeColumn: SortColumn
+  direction: SortDirection
+  onSort: (column: SortColumn) => void
+  className?: string
+}) {
+  const isActive = activeColumn === column
+  const Icon = !isActive ? ArrowUpDown : direction === 'asc' ? ArrowUp : ArrowDown
+
+  return (
+    <th className={`px-4 py-3 font-semibold ${className}`}>
+      <button
+        type="button"
+        onClick={() => onSort(column)}
+        className="inline-flex items-center gap-1.5 uppercase tracking-wider transition hover:text-brand-900"
+      >
+        {label}
+        <Icon className={`h-3.5 w-3.5 ${isActive ? 'text-brand-900' : 'opacity-40'}`} />
+      </button>
+    </th>
+  )
+}
+
+const DEFAULT_DIRECTION: Record<SortColumn, SortDirection> = {
+  title: 'asc',
+  link: 'asc',
+  added: 'desc',
+  clicks: 'desc',
+  lastClick: 'desc',
 }
 
 export function LinkManager() {
@@ -33,9 +75,19 @@ export function LinkManager() {
   const [loadingStats, setLoadingStats] = useState(true)
   const [statsError, setStatsError] = useState<string | null>(null)
   const [search, setSearch] = useState('')
-  const [sort, setSort] = useState<LinkSort>('newest')
+  const [sortColumn, setSortColumn] = useState<SortColumn>('added')
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
   const confirmTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const handleSort = (column: SortColumn) => {
+    if (sortColumn === column) {
+      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))
+      return
+    }
+    setSortColumn(column)
+    setSortDirection(DEFAULT_DIRECTION[column])
+  }
 
   const loadStats = useCallback(async () => {
     setLoadingStats(true)
@@ -65,25 +117,37 @@ export function LinkManager() {
       }))
 
     if (q) {
-      list = list.filter(({ product }) => product.affiliateUrl.toLowerCase().includes(q))
+      list = list.filter(
+        ({ product }) =>
+          product.affiliateUrl.toLowerCase().includes(q) ||
+          product.title.toLowerCase().includes(q) ||
+          product.brand.toLowerCase().includes(q)
+      )
     }
 
+    const dir = sortDirection === 'asc' ? 1 : -1
+
     list.sort((a, b) => {
-      switch (sort) {
-        case 'oldest':
-          return new Date(a.product.createdAt).getTime() - new Date(b.product.createdAt).getTime()
-        case 'most_clicks':
-          return b.clicks - a.clicks || new Date(b.product.createdAt).getTime() - new Date(a.product.createdAt).getTime()
-        case 'least_clicks':
-          return a.clicks - b.clicks || new Date(b.product.createdAt).getTime() - new Date(a.product.createdAt).getTime()
-        case 'newest':
+      switch (sortColumn) {
+        case 'title':
+          return dir * a.product.title.localeCompare(b.product.title, undefined, { sensitivity: 'base' })
+        case 'link':
+          return dir * a.product.affiliateUrl.localeCompare(b.product.affiliateUrl, undefined, { sensitivity: 'base' })
+        case 'clicks':
+          return dir * (a.clicks - b.clicks) || b.product.title.localeCompare(a.product.title)
+        case 'lastClick': {
+          const aTime = a.lastClickAt ? new Date(a.lastClickAt).getTime() : 0
+          const bTime = b.lastClickAt ? new Date(b.lastClickAt).getTime() : 0
+          return dir * (aTime - bTime)
+        }
+        case 'added':
         default:
-          return new Date(b.product.createdAt).getTime() - new Date(a.product.createdAt).getTime()
+          return dir * (new Date(a.product.createdAt).getTime() - new Date(b.product.createdAt).getTime())
       }
     })
 
     return list
-  }, [products, search, sort, stats])
+  }, [products, search, sortColumn, sortDirection, stats])
 
   const totalClicks = useMemo(
     () => rows.reduce((sum, row) => sum + row.clicks, 0),
@@ -141,49 +205,93 @@ export function LinkManager() {
         </button>
       </div>
 
-      <div className="flex flex-wrap gap-3">
-        <div className="relative min-w-[220px] flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-800/40" />
-          <input
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by URL..."
-            className="w-full border border-brand-200 py-2 pl-10 pr-3 text-sm outline-none focus:border-brand-800"
-          />
-        </div>
-        <select
-          value={sort}
-          onChange={(e) => setSort(e.target.value as LinkSort)}
-          className="border border-brand-200 bg-white px-3 py-2 text-sm outline-none focus:border-brand-800"
-        >
-          <option value="newest">Newest added</option>
-          <option value="oldest">Oldest first</option>
-          <option value="most_clicks">Most clicks</option>
-          <option value="least_clicks">Least clicks</option>
-        </select>
+      <div className="relative min-w-[220px]">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-800/40" />
+        <input
+          type="search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search by product name, brand, or URL..."
+          className="w-full border border-brand-200 py-2 pl-10 pr-3 text-sm outline-none focus:border-brand-800"
+        />
       </div>
 
       <div className="overflow-x-auto border border-brand-200">
         <table className="min-w-full text-sm">
-          <thead className="bg-brand-50 text-left text-xs uppercase tracking-wider text-brand-800/60">
+          <thead className="bg-brand-50 text-left text-xs text-brand-800/60">
             <tr>
-              <th className="px-4 py-3 font-semibold">Affiliate Link</th>
-              <th className="px-4 py-3 font-semibold">Added</th>
-              <th className="px-4 py-3 font-semibold">Clicks</th>
-              <th className="px-4 py-3 font-semibold">Last Click</th>
-              <th className="px-4 py-3 font-semibold">Actions</th>
+              <SortableHeader
+                label="Product"
+                column="title"
+                activeColumn={sortColumn}
+                direction={sortDirection}
+                onSort={handleSort}
+              />
+              <SortableHeader
+                label="Affiliate Link"
+                column="link"
+                activeColumn={sortColumn}
+                direction={sortDirection}
+                onSort={handleSort}
+              />
+              <SortableHeader
+                label="Added"
+                column="added"
+                activeColumn={sortColumn}
+                direction={sortDirection}
+                onSort={handleSort}
+              />
+              <SortableHeader
+                label="Clicks"
+                column="clicks"
+                activeColumn={sortColumn}
+                direction={sortDirection}
+                onSort={handleSort}
+              />
+              <SortableHeader
+                label="Last Click"
+                column="lastClick"
+                activeColumn={sortColumn}
+                direction={sortDirection}
+                onSort={handleSort}
+              />
+              <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-brand-100 bg-white">
             {rows.map(({ product, clicks, lastClickAt }) => (
-              <tr key={product.id} className="align-top">
+              <tr key={product.id} className="align-middle">
                 <td className="px-4 py-3">
                   <a
                     href={product.affiliateUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-start gap-1 break-all text-accent hover:text-accent-hover"
+                    className="flex min-w-[180px] items-center gap-3 transition hover:opacity-80"
+                    title={product.title}
+                  >
+                    <div className="h-16 w-12 shrink-0 overflow-hidden bg-brand-100">
+                      <LazyImage
+                        src={product.imageUrl}
+                        alt={product.title}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="line-clamp-2 text-sm font-medium leading-snug text-brand-900">
+                        {product.title}
+                      </p>
+                      {product.brand.trim() && (
+                        <p className="mt-0.5 text-xs text-brand-800/50">{product.brand}</p>
+                      )}
+                    </div>
+                  </a>
+                </td>
+                <td className="px-4 py-3">
+                  <a
+                    href={product.affiliateUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex max-w-xs items-start gap-1 break-all text-accent hover:text-accent-hover"
                     title={product.affiliateUrl}
                   >
                     {truncateUrl(product.affiliateUrl)}
@@ -237,8 +345,8 @@ export function LinkManager() {
       )}
 
       <p className="text-xs text-brand-800/50">
-        Deleting a link removes the product from the store. Click stats are stored in{' '}
-        <code>click-stats.json</code> on the server.
+        Click a column header to sort. Click again to reverse order. Deleting a link removes the
+        product from the store.
       </p>
     </div>
   )
