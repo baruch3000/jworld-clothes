@@ -19,13 +19,14 @@ export function HomePage() {
       <section className="relative bg-brand-900 text-white">
         <div className="mx-auto flex max-w-7xl flex-col items-center px-4 py-20 text-center sm:px-6 md:py-28">
           <p className="mb-3 text-sm font-medium uppercase tracking-[0.2em] text-accent">
-            New Season Collection
+            Modest Fashion, Top Brands
           </p>
           <h1 className="font-display text-4xl font-semibold leading-tight md:text-6xl">
-            Discover Your<br />Signature Style
+            Style You Love.<br />Standards You Keep.
           </h1>
           <p className="mt-4 max-w-lg text-white/70">
-            Curated fashion from top brands. Shop the latest trends in Men, Women, Kids &amp; more.
+            The first dedicated platform for modest fashion from well-known international brands —
+            for Men, Women, Kids, Teen &amp; Baby.
           </p>
           <Link
             to="/category/women"

@@ -3,13 +3,14 @@ export type Category =
   | 'women'
   | 'boys'
   | 'girls'
+  | 'teen'
   | 'baby'
   | 'shoes'
   | 'occasions'
   | 'brands'
   | 'sale'
 
-export type Audience = 'men' | 'women' | 'kids' | 'baby' | 'unisex'
+export type Audience = 'men' | 'women' | 'kids' | 'teen' | 'baby' | 'unisex'
 
 export type StockStatus = 'in_stock' | 'out_of_stock'
 
@@ -65,6 +66,7 @@ export const CATEGORY_LABELS: Record<Category, string> = {
   women: 'Women',
   boys: 'Boys',
   girls: 'Girls',
+  teen: 'Teen',
   baby: 'Baby',
   shoes: 'Shoes',
   occasions: 'Occasions / Events',
@@ -76,6 +78,7 @@ export const AUDIENCE_LABELS: Record<Audience, string> = {
   men: 'Men',
   women: 'Women',
   kids: 'Kids',
+  teen: 'Teen',
   baby: 'Baby',
   unisex: 'Unisex',
 }
@@ -83,6 +86,7 @@ export const AUDIENCE_LABELS: Record<Audience, string> = {
 export const SIZE_OPTIONS = {
   clothing: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
   shoes: ['36', '37', '38', '39', '40', '41', '42', '43', '44', '45'],
-  kids: ['2Y', '3Y', '4Y', '5Y', '6Y', '8Y', '10Y', '12Y', '14Y'],
+  kids: ['2Y', '3Y', '4Y', '5Y', '6Y', '7Y', '8Y', '10Y', '12Y', '14Y', '16Y'],
+  teen: ['7', '16'],
   baby: ['0-3M', '3-6M', '6-12M', '12-18M', '18-24M'],
 } as const

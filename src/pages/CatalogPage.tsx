@@ -8,6 +8,7 @@ import { getSubcategoriesForCategories } from '../lib/subcategories'
 import { getAllBrands } from '../lib/storage'
 import { ProductGrid } from '../components/products/ProductGrid'
 import { FilterSidebar, FilterDrawer, MobileFilterBar } from '../components/filters/FilterPanel'
+import { ProductSortBar } from '../components/filters/ProductSortBar'
 
 interface CatalogPageProps {
   title: string
@@ -91,6 +92,11 @@ export function CatalogPage({ title, subtitle, presetFilters, filterFn }: Catalo
         />
 
         <div className="flex-1 min-w-0">
+          <ProductSortBar
+            sort={filters.sort}
+            onChange={(sort) => setFilters({ ...filters, sort })}
+            resultCount={filtered.length}
+          />
           <ProductGrid products={filtered} />
         </div>
       </div>

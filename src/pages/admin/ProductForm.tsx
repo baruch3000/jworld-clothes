@@ -43,6 +43,7 @@ const ALL_SIZE_PILLS = [
   ...SIZE_OPTIONS.clothing,
   ...SIZE_OPTIONS.shoes,
   ...SIZE_OPTIONS.kids,
+  ...SIZE_OPTIONS.teen,
   ...SIZE_OPTIONS.baby,
 ]
 

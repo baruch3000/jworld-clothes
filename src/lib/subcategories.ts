@@ -15,6 +15,7 @@ const BABY_ONLY = ['Babygrows & Rompers'] as const
 export const SUBCATEGORIES_BY_CATEGORY: Partial<Record<Category, readonly string[]>> = {
   boys: BOYS_GIRLS_SHARED,
   girls: [...BOYS_GIRLS_SHARED, ...GIRLS_ONLY],
+  teen: [...BOYS_GIRLS_SHARED, ...GIRLS_ONLY],
   baby: BABY_ONLY,
 }
 

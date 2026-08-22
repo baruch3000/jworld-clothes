@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { SlidersHorizontal } from 'lucide-react'
-import type { ProductFilters, SortOption, Currency } from '../../types/product'
+import type { ProductFilters, Currency } from '../../types/product'
 import { CATEGORY_LABELS, SIZE_OPTIONS, type Category } from '../../types/product'
 
 interface FilterPanelProps {
@@ -13,13 +13,6 @@ interface FilterPanelProps {
   displayCurrency?: Currency
 }
 
-const SORT_OPTIONS: { value: SortOption; label: string }[] = [
-  { value: 'newest', label: 'Newest' },
-  { value: 'price_asc', label: 'Price: Low to High' },
-  { value: 'price_desc', label: 'Price: High to Low' },
-  { value: 'biggest_discount', label: 'Biggest Discount' },
-]
-
 const ALL_CATEGORIES = Object.keys(CATEGORY_LABELS).filter(
   (c) => c !== 'brands' && c !== 'sale'
 ) as Category[]
@@ -28,6 +21,7 @@ const ALL_SIZES = [
   ...SIZE_OPTIONS.clothing,
   ...SIZE_OPTIONS.shoes,
   ...SIZE_OPTIONS.kids,
+  ...SIZE_OPTIONS.teen,
   ...SIZE_OPTIONS.baby,
 ]
 
@@ -94,22 +88,6 @@ function FilterContent({
             Clear all
           </button>
         )}
-      </div>
-
-      <div>
-        <label htmlFor="sort" className="mb-2 block text-xs font-semibold uppercase tracking-wider">
-          Sort By
-        </label>
-        <select
-          id="sort"
-          value={filters.sort}
-          onChange={(e) => onChange({ ...filters, sort: e.target.value as SortOption })}
-          className="w-full border border-brand-200 bg-white px-3 py-2 text-sm outline-none focus:border-brand-800"
-        >
-          {SORT_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>{opt.label}</option>
-          ))}
-        </select>
       </div>
 
       <div>
@@ -346,7 +324,7 @@ export function MobileFilterBar({ onOpen }: { onOpen: () => void }) {
       className="flex items-center gap-2 border border-brand-200 bg-white px-4 py-2.5 text-sm font-medium lg:hidden"
     >
       <SlidersHorizontal className="h-4 w-4" />
-      Filters &amp; Sort
+      Filters
     </button>
   )
 }

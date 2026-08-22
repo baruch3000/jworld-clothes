@@ -13,6 +13,7 @@ const NAV_CATEGORIES: Category[] = [
   'women',
   'boys',
   'girls',
+  'teen',
   'baby',
   'shoes',
   'occasions',

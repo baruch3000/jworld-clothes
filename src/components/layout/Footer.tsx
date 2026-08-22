@@ -8,7 +8,7 @@ export function Footer() {
           <div>
             <h3 className="font-display text-lg font-semibold">J-World Clothes</h3>
             <p className="mt-2 text-sm leading-relaxed text-brand-800/60">
-              Curated fashion finds from top brands. We help you discover style — you shop directly with merchants.
+              Modest fashion from well-known brands — curated for you. Shop directly with trusted merchants.
             </p>
           </div>
 

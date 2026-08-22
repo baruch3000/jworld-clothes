@@ -9,6 +9,8 @@ export function categoryToAudience(category: Category): Audience {
     case 'boys':
     case 'girls':
       return 'kids'
+    case 'teen':
+      return 'teen'
     case 'baby':
       return 'baby'
     default:
