@@ -8,8 +8,9 @@ import { useCatalog } from '../../context/CatalogContext'
 import { ProductForm } from './ProductForm'
 import { ProductTable } from './ProductTable'
 import { BrandManager } from './BrandManager'
+import { LinkManager } from './LinkManager'
 import type { Product } from '../../types/product'
-import { Download, Upload, LogOut, Shield, Package, Trash2 } from 'lucide-react'
+import { Download, Upload, LogOut, Shield, Package, Trash2, Link2, LayoutGrid } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 function AdminLogin({ onLogin }: { onLogin: () => void }) {
@@ -74,6 +75,7 @@ export function AdminPage() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [importMessage, setImportMessage] = useState<string | null>(null)
   const [confirmClearAll, setConfirmClearAll] = useState(false)
+  const [activeTab, setActiveTab] = useState<'products' | 'links'>('products')
 
   if (!authenticated) {
     return <AdminLogin onLogin={() => setAuthenticated(true)} />
@@ -222,7 +224,8 @@ export function AdminPage() {
         <div className="mb-6 rounded border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">
           <strong>Safe updates:</strong> Your products live in <code className="text-xs">catalog.json</code> on the server.
           When updating the site design, upload only <strong>index.html</strong> and <strong>assets/</strong> —
-          do <strong>not</strong> delete or replace <code className="text-xs">catalog.json</code> or <code className="text-xs">api/</code>.
+          do <strong>not</strong> delete or replace <code className="text-xs">catalog.json</code>,{' '}
+          <code className="text-xs">click-stats.json</code>, or <code className="text-xs">api/</code>.
         </div>
 
         <div className="mb-6 rounded border border-accent/30 bg-accent/5 px-4 py-3 text-sm text-brand-800/70">
@@ -231,9 +234,37 @@ export function AdminPage() {
           <strong>Affiliate / Source URL</strong>. Paste images with <strong>Ctrl+V</strong> in the image area.
         </div>
 
+        <div className="mb-6 flex flex-wrap gap-2 border-b border-brand-200 pb-4">
+          <button
+            type="button"
+            onClick={() => setActiveTab('products')}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition ${
+              activeTab === 'products'
+                ? 'bg-brand-900 text-white'
+                : 'border border-brand-200 text-brand-800/70 hover:border-brand-800'
+            }`}
+          >
+            <LayoutGrid className="h-4 w-4" />
+            Products
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('links')}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition ${
+              activeTab === 'links'
+                ? 'bg-brand-900 text-white'
+                : 'border border-brand-200 text-brand-800/70 hover:border-brand-800'
+            }`}
+          >
+            <Link2 className="h-4 w-4" />
+            Links &amp; Clicks
+          </button>
+        </div>
+
+        {activeTab === 'products' ? (
         <div className="grid gap-8 xl:grid-cols-5">
-          <div className="xl:col-span-2 space-y-6">
-            <div className="space-y-6 xl:sticky xl:top-8">
+          <div className="xl:col-span-2">
+            <div className="space-y-6 xl:sticky xl:top-24 xl:max-h-[calc(100vh-6.5rem)] xl:overflow-y-auto xl:overscroll-y-contain xl:pr-1">
               <BrandManager />
               <div className="border border-brand-200 bg-white p-6">
                 <ProductForm
@@ -254,6 +285,12 @@ export function AdminPage() {
             </div>
           </div>
         </div>
+        ) : (
+          <div className="border border-brand-200 bg-white p-4 sm:p-6">
+            <h2 className="mb-4 font-display text-lg font-semibold">Affiliate Links &amp; Click Stats</h2>
+            <LinkManager />
+          </div>
+        )}
       </div>
     </div>
   )

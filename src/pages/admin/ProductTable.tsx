@@ -8,7 +8,7 @@ import {
   formatProductCategories,
   getProductCategories,
 } from '../../lib/productCategories'
-import { Pencil, Trash2, ToggleLeft, ToggleRight, X, Check, Search } from 'lucide-react'
+import { Pencil, Trash2, ToggleLeft, ToggleRight, X, Check, Search, ExternalLink } from 'lucide-react'
 import { LazyImage } from '../../components/ui/LazyImage'
 
 interface ProductTableProps {
@@ -121,7 +121,13 @@ export function ProductTable({ onEdit }: ProductTableProps) {
                   isPending ? 'border-red-300 bg-red-50/40' : ''
                 }`}
               >
-                <div className="flex min-w-0 flex-1 basis-[200px] items-center gap-3">
+                <a
+                  href={product.affiliateUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex min-w-0 flex-1 basis-[200px] items-center gap-3 transition hover:opacity-80"
+                  title="Open store link"
+                >
                   <div className="h-14 w-11 shrink-0 overflow-hidden bg-brand-100">
                     <LazyImage src={product.imageUrl} alt="" className="h-full w-full" />
                   </div>
@@ -137,7 +143,7 @@ export function ProductTable({ onEdit }: ProductTableProps) {
                         .join(' · ')}
                     </p>
                   </div>
-                </div>
+                </a>
 
                 <div className="flex shrink-0 flex-col items-end gap-0.5">
                   <span className="text-sm font-semibold whitespace-nowrap">
@@ -153,6 +159,17 @@ export function ProductTable({ onEdit }: ProductTableProps) {
                 </div>
 
                 <div className="flex w-full shrink-0 items-center justify-end gap-1 sm:w-auto">
+                  {product.affiliateUrl && (
+                    <a
+                      href={product.affiliateUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex h-8 w-8 items-center justify-center border border-brand-200 transition hover:border-brand-800 hover:text-accent"
+                      title="Open store link"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                    </a>
+                  )}
                   <button
                     type="button"
                     onClick={() => {

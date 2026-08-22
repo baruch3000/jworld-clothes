@@ -10,6 +10,7 @@ import {
   PRICE_DISCLAIMER,
 } from '../../lib/merchantDiscount'
 import { useWishlist } from '../../context/WishlistContext'
+import { trackProductClick } from '../../lib/clickApi'
 import { LazyImage } from '../ui/LazyImage'
 
 interface ProductCardProps {
@@ -24,6 +25,10 @@ export function ProductCard({ product }: ProductCardProps) {
   const storeUrl = getAffiliateStoreUrl(product)
   const originalPriceLabel = formatProductOriginalPrice(product)
 
+  const handleStoreClick = () => {
+    trackProductClick(product.id)
+  }
+
   return (
     <article className="group animate-fade-in flex h-full flex-col">
       <div className="relative aspect-[3/4] overflow-hidden bg-brand-100">
@@ -31,6 +36,7 @@ export function ProductCard({ product }: ProductCardProps) {
           href={storeUrl}
           target="_blank"
           rel="noopener noreferrer sponsored"
+          onClick={handleStoreClick}
           className="block h-full w-full"
           aria-label={`View ${product.title} on merchant site`}
         >
@@ -93,6 +99,7 @@ export function ProductCard({ product }: ProductCardProps) {
           href={storeUrl}
           target="_blank"
           rel="noopener noreferrer sponsored"
+          onClick={handleStoreClick}
           className="font-display text-base font-medium leading-snug text-brand-900 transition hover:text-accent line-clamp-2"
         >
           {product.title}
@@ -143,6 +150,7 @@ export function ProductCard({ product }: ProductCardProps) {
           href={storeUrl}
           target="_blank"
           rel="noopener noreferrer sponsored"
+          onClick={handleStoreClick}
           className="mt-auto flex items-center justify-center gap-2 border border-brand-900 bg-brand-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-brand-800"
         >
           Check Current Price &amp; Buy
