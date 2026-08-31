@@ -3,6 +3,9 @@ import { ArrowDown, ArrowUp, ArrowUpDown, ExternalLink, RefreshCw, Search, Trash
 import type { Product } from '../../types/product'
 import { useCatalog } from '../../context/CatalogContext'
 import { fetchClickStats, type ClickStatsMap } from '../../lib/clickApi'
+import { getLinkOnlyDisplayTitle, isLinkOnlyProduct } from '../../lib/linkOnlyProduct'
+import { getProductCategories } from '../../lib/productCategories'
+import { ProductPlaceholder } from '../../components/products/ProductPlaceholder'
 import { LazyImage } from '../../components/ui/LazyImage'
 
 type SortColumn = 'title' | 'link' | 'added' | 'clicks' | 'lastClick'
@@ -259,27 +262,47 @@ export function LinkManager() {
             </tr>
           </thead>
           <tbody className="divide-y divide-brand-100 bg-white">
-            {rows.map(({ product, clicks, lastClickAt }) => (
-              <tr key={product.id} className="align-middle">
+            {rows.map(({ product, clicks, lastClickAt }) => {
+              const displayTitle = getLinkOnlyDisplayTitle(product)
+              const linkOnly = isLinkOnlyProduct(product)
+              const primaryCategory = getProductCategories(product)[0] ?? product.category
+
+              return (
+              <tr key={product.id} className={`align-middle ${linkOnly ? 'bg-accent/5' : ''}`}>
                 <td className="px-4 py-3">
                   <a
                     href={product.affiliateUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex min-w-[180px] items-center gap-3 transition hover:opacity-80"
-                    title={product.title}
+                    title={displayTitle}
                   >
                     <div className="h-16 w-12 shrink-0 overflow-hidden bg-brand-100">
-                      <LazyImage
-                        src={product.imageUrl}
-                        alt={product.title}
-                        className="h-full w-full object-cover"
-                      />
+                      {linkOnly ? (
+                        <ProductPlaceholder
+                          category={primaryCategory}
+                          subcategory={product.subcategory}
+                          className="h-full w-full"
+                        />
+                      ) : (
+                        <LazyImage
+                          src={product.imageUrl}
+                          alt={displayTitle}
+                          className="h-full w-full object-cover"
+                        />
+                      )}
                     </div>
                     <div className="min-w-0">
-                      <p className="line-clamp-2 text-sm font-medium leading-snug text-brand-900">
-                        {product.title}
-                      </p>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <p className="line-clamp-2 text-sm font-medium leading-snug text-brand-900">
+                          {displayTitle}
+                        </p>
+                        {linkOnly && (
+                          <span className="shrink-0 bg-accent px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-white">
+                            Link only
+                          </span>
+                        )}
+                      </div>
                       {product.brand.trim() && (
                         <p className="mt-0.5 text-xs text-brand-800/50">{product.brand}</p>
                       )}
@@ -335,7 +358,7 @@ export function LinkManager() {
                   )}
                 </td>
               </tr>
-            ))}
+            )})}
           </tbody>
         </table>
       </div>

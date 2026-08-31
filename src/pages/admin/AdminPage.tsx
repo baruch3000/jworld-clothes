@@ -9,8 +9,9 @@ import { ProductForm } from './ProductForm'
 import { ProductTable } from './ProductTable'
 import { BrandManager } from './BrandManager'
 import { LinkManager } from './LinkManager'
+import { LinkQuickForm } from './LinkQuickForm'
 import type { Product } from '../../types/product'
-import { Download, Upload, LogOut, Shield, Package, Trash2, Link2, LayoutGrid } from 'lucide-react'
+import { Download, Upload, LogOut, Shield, Package, Trash2, Link2, LayoutGrid, Zap } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 function AdminLogin({ onLogin }: { onLogin: () => void }) {
@@ -75,7 +76,20 @@ export function AdminPage() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [importMessage, setImportMessage] = useState<string | null>(null)
   const [confirmClearAll, setConfirmClearAll] = useState(false)
-  const [activeTab, setActiveTab] = useState<'products' | 'links'>('products')
+  const [activeTab, setActiveTab] = useState<'products' | 'quickLinks' | 'links'>('products')
+  const [editingLink, setEditingLink] = useState<Product | null>(null)
+
+  const handleEditProduct = (product: Product) => {
+    if (product.linkOnly) {
+      setActiveTab('quickLinks')
+      setEditingLink(product)
+      setEditingProduct(null)
+    } else {
+      setActiveTab('products')
+      setEditingProduct(product)
+      setEditingLink(null)
+    }
+  }
 
   if (!authenticated) {
     return <AdminLogin onLogin={() => setAuthenticated(true)} />
@@ -229,6 +243,24 @@ export function AdminPage() {
         </div>
 
         <div className="mb-6 rounded border border-accent/30 bg-accent/5 px-4 py-3 text-sm text-brand-800/70">
+          <strong>Rakuten / Linkshare workflow:</strong>
+          <ol className="mt-2 list-decimal space-y-1 pl-5">
+            <li>
+              Use the <strong>LinkGenerator bookmarklet</strong> in your browser on a merchant product page
+              (installed once from Rakuten Advertising → APIs → Manage Tokens).
+            </li>
+            <li>Copy the generated HTML or link and paste it below in{' '}
+            <strong>Affiliate / Source URL</strong> when adding a product.</li>
+            <li>J-World saves the tracking URL in your catalog — no Rakuten token is stored on this site.</li>
+          </ol>
+          <p className="mt-2 text-xs text-brand-800/55">
+            If you click <strong>Update token</strong> in Rakuten, you must drag the bookmarklet to your
+            bookmarks bar again. Existing products in the store keep working; only new link generation
+            needs the new bookmarklet.
+          </p>
+        </div>
+
+        <div className="mb-6 rounded border border-accent/30 bg-accent/5 px-4 py-3 text-sm text-brand-800/70">
           <strong>Your links:</strong> Demo products use sample merchant URLs (Zara, Nike, etc.) for preview only.
           To use your own affiliate links — click <strong>Edit</strong> on a product, or add a new one and paste your link in{' '}
           <strong>Affiliate / Source URL</strong>. Paste images with <strong>Ctrl+V</strong> in the image area.
@@ -246,6 +278,21 @@ export function AdminPage() {
           >
             <LayoutGrid className="h-4 w-4" />
             Products
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab('quickLinks')
+              setEditingLink(null)
+            }}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition ${
+              activeTab === 'quickLinks'
+                ? 'bg-brand-900 text-white'
+                : 'border border-brand-200 text-brand-800/70 hover:border-brand-800'
+            }`}
+          >
+            <Zap className="h-4 w-4" />
+            Quick Links
           </button>
           <button
             type="button"
@@ -281,10 +328,18 @@ export function AdminPage() {
               <h2 className="mb-4 font-display text-lg font-semibold">
                 Product Catalog ({products.length})
               </h2>
-              <ProductTable onEdit={setEditingProduct} />
+              <ProductTable onEdit={handleEditProduct} />
             </div>
           </div>
         </div>
+        ) : activeTab === 'quickLinks' ? (
+          <div className="mx-auto max-w-2xl border border-brand-200 bg-white p-6">
+            <LinkQuickForm
+              editProduct={editingLink}
+              onSaved={() => setEditingLink(null)}
+              onCancel={() => setEditingLink(null)}
+            />
+          </div>
         ) : (
           <div className="border border-brand-200 bg-white p-4 sm:p-6">
             <h2 className="mb-4 font-display text-lg font-semibold">Affiliate Links &amp; Click Stats</h2>

@@ -10,6 +10,8 @@ import {
 } from '../../lib/productCategories'
 import { Pencil, Trash2, ToggleLeft, ToggleRight, X, Check, Search, ExternalLink } from 'lucide-react'
 import { LazyImage } from '../../components/ui/LazyImage'
+import { ProductPlaceholder } from '../../components/products/ProductPlaceholder'
+import { getLinkOnlyDisplayTitle, isLinkOnlyProduct } from '../../lib/linkOnlyProduct'
 
 interface ProductTableProps {
   onEdit: (product: Product) => void
@@ -113,12 +115,15 @@ export function ProductTable({ onEdit }: ProductTableProps) {
         <div className="space-y-2">
           {filtered.map((product) => {
             const isPending = pendingDeleteId === product.id
+            const linkOnly = isLinkOnlyProduct(product)
+            const displayTitle = getLinkOnlyDisplayTitle(product)
+            const primaryCategory = getProductCategories(product)[0] ?? product.category
 
             return (
               <div
                 key={product.id}
                 className={`flex flex-wrap items-center gap-3 border border-brand-200 bg-white p-3 transition ${
-                  isPending ? 'border-red-300 bg-red-50/40' : ''
+                  isPending ? 'border-red-300 bg-red-50/40' : linkOnly ? 'border-accent/30 bg-accent/5' : ''
                 }`}
               >
                 <a
@@ -129,10 +134,25 @@ export function ProductTable({ onEdit }: ProductTableProps) {
                   title="Open store link"
                 >
                   <div className="h-14 w-11 shrink-0 overflow-hidden bg-brand-100">
-                    <LazyImage src={product.imageUrl} alt="" className="h-full w-full" />
+                    {linkOnly ? (
+                      <ProductPlaceholder
+                        category={primaryCategory}
+                        subcategory={product.subcategory}
+                        className="h-full w-full"
+                      />
+                    ) : (
+                      <LazyImage src={product.imageUrl} alt="" className="h-full w-full" />
+                    )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="line-clamp-2 text-sm font-medium leading-snug">{product.title}</p>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <p className="line-clamp-2 text-sm font-medium leading-snug">{displayTitle}</p>
+                      {linkOnly && (
+                        <span className="shrink-0 bg-accent px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-white">
+                          Link
+                        </span>
+                      )}
+                    </div>
                     <p className="mt-0.5 text-xs text-brand-800/50">
                       {[
                         product.brand,

@@ -39,6 +39,8 @@ export interface Product {
   inStock: boolean
   /** Show "significant discount on merchant site" notice (no fixed amount) */
   merchantDiscount?: boolean
+  /** No merchant image/text — graphic card with affiliate link only */
+  linkOnly?: boolean
   createdAt: string
   updatedAt: string
 }

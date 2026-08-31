@@ -1,5 +1,7 @@
 import type { Product } from '../../types/product'
 import { ProductCard } from './ProductCard'
+import { LinkOnlyProductCard } from './LinkOnlyProductCard'
+import { isLinkOnlyProduct } from '../../lib/linkOnlyProduct'
 import { SearchX } from 'lucide-react'
 
 interface ProductGridProps {
@@ -22,9 +24,13 @@ export function ProductGrid({
 
   return (
     <div className="grid grid-cols-2 items-stretch gap-x-4 gap-y-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-      {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
-      ))}
+      {products.map((product) =>
+        isLinkOnlyProduct(product) ? (
+          <LinkOnlyProductCard key={product.id} product={product} />
+        ) : (
+          <ProductCard key={product.id} product={product} />
+        )
+      )}
     </div>
   )
 }
