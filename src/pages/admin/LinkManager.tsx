@@ -4,6 +4,7 @@ import type { Product } from '../../types/product'
 import { useCatalog } from '../../context/CatalogContext'
 import { fetchClickStats, type ClickStatsMap } from '../../lib/clickApi'
 import { getLinkOnlyDisplayTitle, isLinkOnlyProduct } from '../../lib/linkOnlyProduct'
+import { isAmazonLinkProduct } from '../../lib/amazonAffiliate'
 import { getProductCategories } from '../../lib/productCategories'
 import { ProductPlaceholder } from '../../components/products/ProductPlaceholder'
 import { LazyImage } from '../../components/ui/LazyImage'
@@ -300,6 +301,11 @@ export function LinkManager() {
                         {linkOnly && (
                           <span className="shrink-0 bg-accent px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-white">
                             Link only
+                          </span>
+                        )}
+                        {isAmazonLinkProduct(product) && (
+                          <span className="shrink-0 bg-[#232F3E] px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-[#FF9900]">
+                            Amazon
                           </span>
                         )}
                       </div>

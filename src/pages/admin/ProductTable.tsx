@@ -12,6 +12,7 @@ import { Pencil, Trash2, ToggleLeft, ToggleRight, X, Check, Search, ExternalLink
 import { LazyImage } from '../../components/ui/LazyImage'
 import { ProductPlaceholder } from '../../components/products/ProductPlaceholder'
 import { getLinkOnlyDisplayTitle, isLinkOnlyProduct } from '../../lib/linkOnlyProduct'
+import { isAmazonLinkProduct } from '../../lib/amazonAffiliate'
 
 interface ProductTableProps {
   onEdit: (product: Product) => void
@@ -150,6 +151,11 @@ export function ProductTable({ onEdit }: ProductTableProps) {
                       {linkOnly && (
                         <span className="shrink-0 bg-accent px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-white">
                           Link
+                        </span>
+                      )}
+                      {isAmazonLinkProduct(product) && (
+                        <span className="shrink-0 bg-[#232F3E] px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-[#FF9900]">
+                          Amazon
                         </span>
                       )}
                     </div>

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { AmazonAssociateDisclosure } from '../legal/AmazonAssociateDisclosure'
 
 export function Footer() {
   return (
@@ -31,6 +32,7 @@ export function Footer() {
               Any price and availability information displayed on the merchant site at the time of purchase will apply.
               As an affiliate, we may earn commissions from qualifying purchases.
             </p>
+            <AmazonAssociateDisclosure className="mt-3 text-xs" />
           </div>
         </div>
 

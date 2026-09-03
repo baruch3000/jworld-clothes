@@ -41,6 +41,10 @@ export interface Product {
   merchantDiscount?: boolean
   /** No merchant image/text — graphic card with affiliate link only */
   linkOnly?: boolean
+  /** User-written one-line description (not copied from merchant) */
+  shortDescription?: string
+  /** Amazon affiliate link — shown in Amazon Finds section */
+  amazonLink?: boolean
   createdAt: string
   updatedAt: string
 }

@@ -197,6 +197,10 @@ export function AffiliateDisclosurePage() {
         do not influence our editorial curation — we prioritize quality, style, and relevance.
       </p>
       <p>
+        <strong>Amazon Associates Program:</strong> As an Amazon Associate I earn from qualifying purchases.
+        Amazon links on this site are marked as paid links and may appear in our Amazon Finds section.
+      </p>
+      <p>
         If you have questions about our affiliate partnerships, please contact us at{' '}
         <a href="mailto:info@jworldclothes.com" className="text-accent">info@jworldclothes.com</a>.
       </p>

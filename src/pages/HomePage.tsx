@@ -2,17 +2,24 @@ import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import { useCatalog } from '../context/CatalogContext'
 import { ProductGrid } from '../components/products/ProductGrid'
+import { AmazonFindsSection } from '../components/products/AmazonFindsSection'
 import { isOnSale } from '../lib/filters'
+import { isAmazonLinkProduct } from '../lib/amazonAffiliate'
 import { CATEGORY_LABELS } from '../types/product'
 import { CategoryGraphicTile } from '../components/home/CategoryGraphicTile'
 import { GRAPHIC_CATEGORY_TILES } from '../components/home/categoryGraphics'
 
 export function HomePage() {
   const { products } = useCatalog()
-  const saleItems = products.filter(isOnSale).slice(0, 4)
+  const saleItems = products.filter((p) => isOnSale(p) && !isAmazonLinkProduct(p)).slice(0, 4)
   const newest = [...products]
+    .filter((p) => !isAmazonLinkProduct(p))
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 8)
+  const amazonFinds = [...products]
+    .filter(isAmazonLinkProduct)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 4)
 
   return (
     <div>
@@ -79,6 +86,25 @@ export function HomePage() {
         </div>
         <ProductGrid products={newest} />
       </section>
+
+      {amazonFinds.length > 0 && (
+        <section className="bg-white py-16">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="mb-2 flex items-end justify-between">
+              <h2 className="font-display text-2xl font-semibold md:text-3xl">Amazon Finds</h2>
+              <Link to="/amazon-finds" className="text-sm font-medium text-accent hover:text-accent-hover">
+                View All →
+              </Link>
+            </div>
+            <AmazonFindsSection
+              products={amazonFinds}
+              hideTitle
+              showDisclosure={true}
+              className="mt-6 border-t-0 pt-0"
+            />
+          </div>
+        </section>
+      )}
     </div>
   )
 }

@@ -16,6 +16,7 @@ import { buildLinkOnlyTitle } from '../../lib/linkOnlyProduct'
 import { generateId, getAllBrands, addCustomBrand } from '../../lib/storage'
 import { useCatalog } from '../../context/CatalogContext'
 import { parseAffiliateInput } from '../../lib/affiliateLinkParse'
+import { isAmazonAffiliateUrl } from '../../lib/amazonAffiliate'
 import { Link2 } from 'lucide-react'
 
 const CATEGORIES = ASSIGNABLE_CATEGORIES
@@ -32,6 +33,7 @@ const CURRENCIES: Currency[] = ['USD', 'EUR', 'GBP', 'ILS']
 
 interface LinkQuickFormState {
   affiliateUrl: string
+  shortDescription: string
   brand: string
   category: Category
   categories: Category[]
@@ -46,6 +48,7 @@ interface LinkQuickFormState {
 
 const emptyForm = (): LinkQuickFormState => ({
   affiliateUrl: '',
+  shortDescription: '',
   brand: '',
   category: 'women',
   categories: ['women'],
@@ -77,6 +80,7 @@ export function LinkQuickForm({ editProduct, onSaved, onCancel }: LinkQuickFormP
     if (editProduct?.linkOnly) {
       setForm({
         affiliateUrl: editProduct.affiliateUrl,
+        shortDescription: editProduct.shortDescription ?? '',
         brand: editProduct.brand,
         category: editProduct.category,
         categories: getProductCategories(editProduct),
@@ -150,6 +154,7 @@ export function LinkQuickForm({ editProduct, onSaved, onCancel }: LinkQuickFormP
   )
   const subcategoryOptions = getSubcategoriesForCategories(selectedCategories)
   const previewTitle = buildLinkOnlyTitle(selectedCategories, form.subcategory)
+  const isAmazonUrl = isAmazonAffiliateUrl(form.affiliateUrl)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -178,6 +183,7 @@ export function LinkQuickForm({ editProduct, onSaved, onCancel }: LinkQuickFormP
     )
     const primaryCategory = categories[0]
     const title = buildLinkOnlyTitle(categories, form.subcategory)
+    const amazonLink = isAmazonAffiliateUrl(url)
 
     const productData: Product = {
       id: editProduct?.id ?? generateId(),
@@ -197,6 +203,8 @@ export function LinkQuickForm({ editProduct, onSaved, onCancel }: LinkQuickFormP
       inStock: form.inStock,
       merchantDiscount: form.merchantDiscount,
       linkOnly: true,
+      shortDescription: form.shortDescription.trim() || undefined,
+      amazonLink,
       createdAt: editProduct?.createdAt ?? now,
       updatedAt: now,
     }
@@ -236,6 +244,12 @@ export function LinkQuickForm({ editProduct, onSaved, onCancel }: LinkQuickFormP
         No merchant images or product names — only your affiliate link, price, and category.
         The store shows a graphic card with an auto-generated label:{' '}
         <strong>{previewTitle}</strong>
+        {isAmazonUrl && (
+          <>
+            {' '}
+            · This link will appear in the <strong>Amazon Finds</strong> section.
+          </>
+        )}
       </p>
 
       <div>
@@ -256,9 +270,31 @@ export function LinkQuickForm({ editProduct, onSaved, onCancel }: LinkQuickFormP
           className="w-full border border-brand-200 px-3 py-2.5 text-sm outline-none focus:border-brand-800"
         />
         {urlError && <p className="mt-1 text-xs text-red-600">{urlError}</p>}
+        {isAmazonUrl && !urlError && (
+          <p className="mt-1 text-xs font-medium text-[#C45500]">
+            Amazon link detected — add your own short description below (do not copy from Amazon).
+          </p>
+        )}
         <p className="mt-1 text-xs text-brand-800/50">
           Paste the tracking URL only — we extract the link from HTML but never copy product names.
         </p>
+      </div>
+
+      <div>
+        <label className="mb-1 block text-xs font-semibold uppercase tracking-wider">
+          Short Description{' '}
+          <span className="font-normal normal-case text-brand-800/40">
+            (optional — your own words, max 120 chars)
+          </span>
+        </label>
+        <input
+          type="text"
+          maxLength={120}
+          value={form.shortDescription}
+          onChange={(e) => update('shortDescription', e.target.value)}
+          placeholder="e.g. Modest midi dress in neutral tones"
+          className="w-full border border-brand-200 px-3 py-2.5 text-sm outline-none focus:border-brand-800"
+        />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">

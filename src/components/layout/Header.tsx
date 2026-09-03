@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Heart, Menu, Search, X } from 'lucide-react'
 import { useState } from 'react'
 import type { Category } from '../../types/product'
@@ -30,6 +30,8 @@ export function Header({ searchValue, onSearchChange }: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const { wishlist } = useWishlist()
   const navigate = useNavigate()
+  const location = useLocation()
+  const isAmazonFinds = location.pathname === '/amazon-finds'
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -99,7 +101,19 @@ export function Header({ searchValue, onSearchChange }: HeaderProps) {
         </p>
 
         <nav className="relative z-[60] hidden overflow-visible border-t border-brand-200 md:block">
-          <NavCategoryMenu categories={NAV_CATEGORIES} />
+          <div className="flex items-center justify-between gap-2">
+            <NavCategoryMenu categories={NAV_CATEGORIES} />
+            <Link
+              to="/amazon-finds"
+              className={`shrink-0 whitespace-nowrap px-3 py-2 text-sm font-semibold transition ${
+                isAmazonFinds
+                  ? 'text-[#C45500]'
+                  : 'text-brand-800/70 hover:text-[#C45500]'
+              }`}
+            >
+              Amazon Finds
+            </Link>
+          </div>
         </nav>
       </div>
 
@@ -126,6 +140,13 @@ export function Header({ searchValue, onSearchChange }: HeaderProps) {
               variant="mobile"
               onNavigate={() => setMobileOpen(false)}
             />
+            <Link
+              to="/amazon-finds"
+              onClick={() => setMobileOpen(false)}
+              className="mt-2 block border-t border-brand-100 py-3 text-sm font-semibold text-[#C45500]"
+            >
+              Amazon Finds
+            </Link>
           </nav>
         </div>
       )}

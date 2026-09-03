@@ -11,6 +11,7 @@ import { BrandsPage } from './pages/BrandsPage'
 import { BrandDetailPage } from './pages/BrandDetailPage'
 import { WishlistPage } from './pages/WishlistPage'
 import { RedirectPage } from './pages/RedirectPage'
+import { AmazonFindsPage } from './pages/AmazonFindsPage'
 import { AdminPage } from './pages/admin/AdminPage'
 import {
   AboutPage,
@@ -34,6 +35,7 @@ export default function App() {
               <Route path="category/:slug" element={<CategoryPage />} />
               <Route path="search" element={<SearchPage />} />
               <Route path="sale" element={<SalePage />} />
+              <Route path="amazon-finds" element={<AmazonFindsPage />} />
               <Route path="brands" element={<BrandsPage />} />
               <Route path="brands/:brand" element={<BrandDetailPage />} />
               <Route path="wishlist" element={<WishlistPage />} />

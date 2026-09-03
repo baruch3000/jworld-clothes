@@ -7,6 +7,8 @@ import { getCatalogDisplayPriceRange } from '../lib/exchangeRates'
 import { getSubcategoriesForCategories } from '../lib/subcategories'
 import { getAllBrands } from '../lib/storage'
 import { ProductGrid } from '../components/products/ProductGrid'
+import { AmazonFindsSection } from '../components/products/AmazonFindsSection'
+import { splitAmazonLinkProducts } from '../lib/amazonAffiliate'
 import { FilterSidebar, FilterDrawer, MobileFilterBar } from '../components/filters/FilterPanel'
 import { ProductSortBar } from '../components/filters/ProductSortBar'
 
@@ -69,6 +71,11 @@ export function CatalogPage({ title, subtitle, presetFilters, filterFn }: Catalo
     [baseProducts, filters, convertPrice]
   )
 
+  const { regular: regularProducts, amazon: amazonProducts } = useMemo(
+    () => splitAmazonLinkProducts(filtered),
+    [filtered]
+  )
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <div className="mb-8">
@@ -97,7 +104,8 @@ export function CatalogPage({ title, subtitle, presetFilters, filterFn }: Catalo
             onChange={(sort) => setFilters({ ...filters, sort })}
             resultCount={filtered.length}
           />
-          <ProductGrid products={filtered} />
+          <ProductGrid products={regularProducts} />
+          <AmazonFindsSection products={amazonProducts} />
         </div>
       </div>
 
