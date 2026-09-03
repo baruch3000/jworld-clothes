@@ -7,6 +7,7 @@ import {
 interface ProductPlaceholderProps {
   category: Category
   subcategory?: string
+  compact?: boolean
   className?: string
 }
 
@@ -32,7 +33,12 @@ const CIRCLE_VARIANTS: Record<
   },
 }
 
-export function ProductPlaceholder({ category, subcategory, className = '' }: ProductPlaceholderProps) {
+export function ProductPlaceholder({
+  category,
+  subcategory,
+  compact = false,
+  className = '',
+}: ProductPlaceholderProps) {
   const variant = categoryPlaceholderVariant(category)
   const circles = CIRCLE_VARIANTS[variant]
   const categoryLabel = categoryGraphicLabel(category)
@@ -44,21 +50,21 @@ export function ProductPlaceholder({ category, subcategory, className = '' }: Pr
       <div className="absolute inset-0 bg-gradient-to-br from-brand-800 via-brand-900 to-black" />
       <div aria-hidden className={circles.top} />
       <div aria-hidden className={circles.bottom} />
-      <div aria-hidden className="absolute inset-3 border border-accent/20" />
+      <div aria-hidden className={`absolute inset-3 border border-accent/20 ${compact ? 'inset-2' : ''}`} />
 
-      <div className="absolute inset-0 flex flex-col items-center justify-center px-3 text-center">
-        <span className="font-display text-[clamp(0.65rem,2.5vw,0.75rem)] font-medium uppercase tracking-[0.25em] text-accent">
+      <div className={`absolute inset-0 flex flex-col items-center justify-center text-center ${compact ? 'px-2 py-1' : 'px-3'}`}>
+        <span className={`font-display font-medium uppercase tracking-[0.2em] text-accent ${compact ? 'text-[9px]' : 'text-[clamp(0.65rem,2.5vw,0.75rem)]'}`}>
           Store Link
         </span>
-        <span className="mt-3 font-display text-[clamp(1rem,4vw,1.35rem)] font-semibold leading-tight tracking-[0.12em] text-white">
+        <span className={`mt-1.5 font-display font-semibold leading-tight tracking-[0.1em] text-white ${compact ? 'text-sm' : 'text-[clamp(1rem,4vw,1.35rem)]'}`}>
           {categoryLabel}
         </span>
         {subcategory && (
-          <span className="mt-2 line-clamp-3 px-2 text-[10px] font-medium uppercase tracking-wider text-white/70">
+          <span className={`mt-1 line-clamp-2 font-medium uppercase tracking-wider text-white/70 ${compact ? 'px-1 text-[8px]' : 'px-2 text-[10px]'}`}>
             {subcategory}
           </span>
         )}
-        <span className="mt-4 h-px w-10 bg-accent" />
+        <span className={`bg-accent ${compact ? 'mt-2 h-px w-6' : 'mt-4 h-px w-10'}`} />
       </div>
     </div>
   )

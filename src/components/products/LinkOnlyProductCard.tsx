@@ -1,5 +1,5 @@
 import { ExternalLink, Tag } from 'lucide-react'
-import type { Product } from '../../types/product'
+import type { Category, Product } from '../../types/product'
 import { getAffiliateStoreUrl } from '../../lib/affiliate'
 import { isOnSale } from '../../lib/filters'
 import { useCurrency } from '../../context/CurrencyContext'
@@ -10,22 +10,30 @@ import {
   PRICE_DISCLAIMER,
 } from '../../lib/merchantDiscount'
 import { trackProductClick } from '../../lib/clickApi'
-import { getLinkOnlyDisplayTitle } from '../../lib/linkOnlyProduct'
-import { getProductCategories } from '../../lib/productCategories'
+import {
+  getLinkOnlyDisplayTitle,
+  getLinkOnlyPlaceholderCategory,
+  getLinkOnlyPlaceholderSubcategory,
+} from '../../lib/linkOnlyProduct'
+import { isAmazonLinkProduct } from '../../lib/amazonAffiliate'
 import { ProductPlaceholder } from './ProductPlaceholder'
+import { ProductSizeList } from './ProductSizeList'
 
 interface LinkOnlyProductCardProps {
   product: Product
+  pageCategory?: Category
 }
 
-export function LinkOnlyProductCard({ product }: LinkOnlyProductCardProps) {
+export function LinkOnlyProductCard({ product, pageCategory }: LinkOnlyProductCardProps) {
   const { formatProductPrice, formatProductOriginalPrice, isConverted } = useCurrency()
   const onSale = isOnSale(product)
   const showMerchantDiscount = hasMerchantDiscountNotice(product)
   const storeUrl = getAffiliateStoreUrl(product)
   const originalPriceLabel = formatProductOriginalPrice(product)
-  const displayTitle = getLinkOnlyDisplayTitle(product)
-  const primaryCategory = getProductCategories(product)[0] ?? product.category
+  const displayTitle = getLinkOnlyDisplayTitle(product, pageCategory)
+  const placeholderCategory = getLinkOnlyPlaceholderCategory(product, pageCategory)
+  const placeholderSubcategory = getLinkOnlyPlaceholderSubcategory(product, pageCategory)
+  const isAmazon = isAmazonLinkProduct(product)
 
   const handleStoreClick = () => {
     trackProductClick(product.id)
@@ -33,7 +41,7 @@ export function LinkOnlyProductCard({ product }: LinkOnlyProductCardProps) {
 
   return (
     <article className="group animate-fade-in flex h-full flex-col ring-1 ring-accent/30 transition hover:ring-accent/50">
-      <div className="relative aspect-[3/4] overflow-hidden">
+      <div className="relative aspect-[16/10] overflow-hidden">
         <a
           href={storeUrl}
           target="_blank"
@@ -43,14 +51,15 @@ export function LinkOnlyProductCard({ product }: LinkOnlyProductCardProps) {
           aria-label={`View ${displayTitle} on merchant site`}
         >
           <ProductPlaceholder
-            category={primaryCategory}
-            subcategory={product.subcategory}
+            category={placeholderCategory}
+            subcategory={placeholderSubcategory}
+            compact
             className="transition duration-500 group-hover:opacity-95"
           />
         </a>
 
-        <span className="absolute left-3 top-3 bg-accent px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white">
-          Store Link
+        <span className={`absolute left-3 top-3 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white ${isAmazon ? 'bg-[#232F3E] text-[#FF9900]' : 'bg-accent'}`}>
+          {isAmazon ? 'Amazon' : 'Store Link'}
         </span>
 
         {onSale && (
@@ -107,18 +116,7 @@ export function LinkOnlyProductCard({ product }: LinkOnlyProductCardProps) {
           {isConverted(product) && " Converted at today's exchange rate."}
         </p>
 
-        {product.sizes.length > 0 && (
-          <div className="mt-1 flex flex-wrap gap-1">
-            {product.sizes.slice(0, 6).map((size) => (
-              <span
-                key={size}
-                className="border border-brand-200 px-1.5 py-0.5 text-[10px] font-medium text-brand-800/70"
-              >
-                {size}
-              </span>
-            ))}
-          </div>
-        )}
+        <ProductSizeList sizes={product.sizes} />
 
         <a
           href={storeUrl}

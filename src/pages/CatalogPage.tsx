@@ -6,9 +6,9 @@ import { filterProducts, DEFAULT_FILTERS, isOnSale } from '../lib/filters'
 import { getCatalogDisplayPriceRange } from '../lib/exchangeRates'
 import { getSubcategoriesForCategories } from '../lib/subcategories'
 import { getAllBrands } from '../lib/storage'
-import { ProductGrid } from '../components/products/ProductGrid'
+import { InterleavedProductGrid } from '../components/products/InterleavedProductGrid'
 import { AmazonFindsSection } from '../components/products/AmazonFindsSection'
-import { splitAmazonLinkProducts } from '../lib/amazonAffiliate'
+import { isAmazonLinkProduct } from '../lib/amazonAffiliate'
 import { FilterSidebar, FilterDrawer, MobileFilterBar } from '../components/filters/FilterPanel'
 import { ProductSortBar } from '../components/filters/ProductSortBar'
 
@@ -71,10 +71,14 @@ export function CatalogPage({ title, subtitle, presetFilters, filterFn }: Catalo
     [baseProducts, filters, convertPrice]
   )
 
-  const { regular: regularProducts, amazon: amazonProducts } = useMemo(
-    () => splitAmazonLinkProducts(filtered),
+  const amazonProducts = useMemo(
+    () => filtered.filter(isAmazonLinkProduct),
     [filtered]
   )
+
+  const pageCategory = presetFilters?.categories?.length === 1
+    ? presetFilters.categories[0]
+    : undefined
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
@@ -104,7 +108,7 @@ export function CatalogPage({ title, subtitle, presetFilters, filterFn }: Catalo
             onChange={(sort) => setFilters({ ...filters, sort })}
             resultCount={filtered.length}
           />
-          <ProductGrid products={regularProducts} />
+          <InterleavedProductGrid products={filtered} pageCategory={pageCategory} />
           <AmazonFindsSection products={amazonProducts} />
         </div>
       </div>

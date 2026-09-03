@@ -8,7 +8,7 @@ import {
   productMatchesPriceFilter,
   getCatalogPriceRange,
 } from './pricing'
-import { getProductCategories, productInCategory } from './productCategories'
+import { getProductCategories, getCategoryPlacements, getSubcategoriesFromPlacement, productInCategory, productMatchesSubcategoryFilter } from './productCategories'
 
 export { getEffectivePrice, getDiscountPercent, isOnSale, getCatalogPriceRange as getPriceRange }
 
@@ -28,6 +28,9 @@ export function filterProducts(
         p.title.toLowerCase().includes(q) ||
         p.brand.toLowerCase().includes(q) ||
         getProductCategories(p).some((c) => c.toLowerCase().includes(q)) ||
+        getCategoryPlacements(p).some((pl) =>
+          getSubcategoriesFromPlacement(pl).some((sub) => sub.toLowerCase().includes(q))
+        ) ||
         (p.subcategory?.toLowerCase().includes(q) ?? false)
     )
   }
@@ -47,9 +50,20 @@ export function filterProducts(
   }
 
   if (filters.subcategories.length > 0) {
-    result = result.filter(
-      (p) => p.subcategory != null && filters.subcategories.includes(p.subcategory)
-    )
+    result = result.filter((p) => {
+      const placements = getCategoryPlacements(p)
+
+      if (filters.categories.length > 0) {
+        return filters.categories.some((cat) =>
+          productInCategory(p, cat) &&
+          productMatchesSubcategoryFilter(p, cat, filters.subcategories)
+        )
+      }
+
+      return placements.some((pl) =>
+        getSubcategoriesFromPlacement(pl).some((sub) => filters.subcategories.includes(sub))
+      ) || (p.subcategory != null && filters.subcategories.includes(p.subcategory))
+    })
   }
 
   result = result.filter((p) => {

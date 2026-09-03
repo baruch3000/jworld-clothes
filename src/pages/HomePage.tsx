@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import { useCatalog } from '../context/CatalogContext'
-import { ProductGrid } from '../components/products/ProductGrid'
+import { InterleavedProductGrid } from '../components/products/InterleavedProductGrid'
 import { AmazonFindsSection } from '../components/products/AmazonFindsSection'
 import { isOnSale } from '../lib/filters'
 import { isAmazonLinkProduct } from '../lib/amazonAffiliate'
@@ -11,11 +11,10 @@ import { GRAPHIC_CATEGORY_TILES } from '../components/home/categoryGraphics'
 
 export function HomePage() {
   const { products } = useCatalog()
-  const saleItems = products.filter((p) => isOnSale(p) && !isAmazonLinkProduct(p)).slice(0, 4)
+  const saleItems = products.filter((p) => isOnSale(p) && !p.linkOnly).slice(0, 8)
   const newest = [...products]
-    .filter((p) => !isAmazonLinkProduct(p))
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    .slice(0, 8)
+    .slice(0, 12)
   const amazonFinds = [...products]
     .filter(isAmazonLinkProduct)
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -72,7 +71,7 @@ export function HomePage() {
                 View All →
               </Link>
             </div>
-            <ProductGrid products={saleItems} />
+            <InterleavedProductGrid products={saleItems} />
           </div>
         </section>
       )}
@@ -84,7 +83,7 @@ export function HomePage() {
             Browse All →
           </Link>
         </div>
-        <ProductGrid products={newest} />
+        <InterleavedProductGrid products={newest} />
       </section>
 
       {amazonFinds.length > 0 && (

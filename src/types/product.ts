@@ -18,6 +18,13 @@ export type Currency = 'USD' | 'EUR' | 'GBP' | 'ILS'
 
 export type PriceType = 'single' | 'range'
 
+export interface CategoryPlacement {
+  category: Category
+  /** @deprecated — use subcategories */
+  subcategory?: string
+  subcategories?: string[]
+}
+
 export interface Product {
   id: string
   title: string
@@ -25,6 +32,8 @@ export interface Product {
   category: Category
   /** Up to 2 categories — product appears in both category pages */
   categories?: Category[]
+  /** Per-category subcategory (up to 2 entries) */
+  categoryPlacements?: CategoryPlacement[]
   audience: Audience
   subcategory?: string
   currency?: Currency

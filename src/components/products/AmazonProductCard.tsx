@@ -1,5 +1,5 @@
 import { ExternalLink, Tag } from 'lucide-react'
-import type { Product } from '../../types/product'
+import type { Category, Product } from '../../types/product'
 import { getAffiliateStoreUrl } from '../../lib/affiliate'
 import { isOnSale } from '../../lib/filters'
 import { useCurrency } from '../../context/CurrencyContext'
@@ -10,22 +10,28 @@ import {
   PRICE_DISCLAIMER,
 } from '../../lib/merchantDiscount'
 import { trackProductClick } from '../../lib/clickApi'
-import { getLinkOnlyDisplayTitle } from '../../lib/linkOnlyProduct'
-import { getProductCategories } from '../../lib/productCategories'
+import {
+  getLinkOnlyDisplayTitle,
+  getLinkOnlyPlaceholderCategory,
+  getLinkOnlyPlaceholderSubcategory,
+} from '../../lib/linkOnlyProduct'
 import { ProductPlaceholder } from './ProductPlaceholder'
+import { ProductSizeList } from './ProductSizeList'
 
 interface AmazonProductCardProps {
   product: Product
+  pageCategory?: Category
 }
 
-export function AmazonProductCard({ product }: AmazonProductCardProps) {
+export function AmazonProductCard({ product, pageCategory }: AmazonProductCardProps) {
   const { formatProductPrice, formatProductOriginalPrice, isConverted } = useCurrency()
   const onSale = isOnSale(product)
   const showMerchantDiscount = hasMerchantDiscountNotice(product)
   const storeUrl = getAffiliateStoreUrl(product)
   const originalPriceLabel = formatProductOriginalPrice(product)
-  const displayTitle = getLinkOnlyDisplayTitle(product)
-  const primaryCategory = getProductCategories(product)[0] ?? product.category
+  const displayTitle = getLinkOnlyDisplayTitle(product, pageCategory)
+  const placeholderCategory = getLinkOnlyPlaceholderCategory(product, pageCategory)
+  const placeholderSubcategory = getLinkOnlyPlaceholderSubcategory(product, pageCategory)
 
   const handleStoreClick = () => {
     trackProductClick(product.id)
@@ -33,7 +39,7 @@ export function AmazonProductCard({ product }: AmazonProductCardProps) {
 
   return (
     <article className="group animate-fade-in flex h-full flex-col ring-1 ring-[#FF9900]/40 transition hover:ring-[#FF9900]/60">
-      <div className="relative aspect-[3/4] overflow-hidden">
+      <div className="relative aspect-[16/10] overflow-hidden">
         <a
           href={storeUrl}
           target="_blank"
@@ -43,8 +49,9 @@ export function AmazonProductCard({ product }: AmazonProductCardProps) {
           aria-label={`See ${displayTitle} on Amazon (paid link)`}
         >
           <ProductPlaceholder
-            category={primaryCategory}
-            subcategory={product.subcategory}
+            category={placeholderCategory}
+            subcategory={placeholderSubcategory}
+            compact
             className="transition duration-500 group-hover:opacity-95"
           />
         </a>
@@ -116,18 +123,7 @@ export function AmazonProductCard({ product }: AmazonProductCardProps) {
           {isConverted(product) && " Converted at today's exchange rate."}
         </p>
 
-        {product.sizes.length > 0 && (
-          <div className="mt-1 flex flex-wrap gap-1">
-            {product.sizes.slice(0, 6).map((size) => (
-              <span
-                key={size}
-                className="border border-brand-200 px-1.5 py-0.5 text-[10px] font-medium text-brand-800/70"
-              >
-                {size}
-              </span>
-            ))}
-          </div>
-        )}
+        <ProductSizeList sizes={product.sizes} />
 
         <a
           href={storeUrl}
