@@ -73,6 +73,7 @@ export function categoryPlaceholderVariant(category: Category): 0 | 1 | 2 | 3 {
     teen: 0,
     baby: 1,
     shoes: 2,
+    bags: 3,
     occasions: 3,
   }
   return map[category] ?? 0

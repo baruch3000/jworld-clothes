@@ -2,6 +2,8 @@ import type { Category } from '../types/product'
 
 const SHOES_AND_BAGS = ['Shoes', 'Bags'] as const
 
+const JEWELRY = ['Jewelry'] as const
+
 const BOYS_GIRLS_SHARED = [
   'Coats & Jackets',
   'Hoodies & Sweatshirts',
@@ -14,15 +16,23 @@ const GIRLS_ONLY = ['Dresses', 'Tops, T-shirts & Blouses'] as const
 
 const BABY_ONLY = ['Babygrows & Rompers'] as const
 
+const BAG_TYPES = [
+  'Handbags',
+  'Totes & Shoulder Bags',
+  'Backpacks',
+  'Crossbody & Clutches',
+] as const
+
 export const SUBCATEGORIES_BY_CATEGORY: Partial<Record<Category, readonly string[]>> = {
   men: [...SHOES_AND_BAGS],
-  women: [...SHOES_AND_BAGS],
+  women: [...JEWELRY, ...SHOES_AND_BAGS],
   boys: [...BOYS_GIRLS_SHARED, ...SHOES_AND_BAGS],
-  girls: [...BOYS_GIRLS_SHARED, ...GIRLS_ONLY, ...SHOES_AND_BAGS],
+  girls: [...BOYS_GIRLS_SHARED, ...GIRLS_ONLY, ...JEWELRY, ...SHOES_AND_BAGS],
   teen: [...BOYS_GIRLS_SHARED, ...GIRLS_ONLY, ...SHOES_AND_BAGS],
   baby: [...BABY_ONLY, ...SHOES_AND_BAGS],
-  shoes: [...SHOES_AND_BAGS],
-  occasions: [...SHOES_AND_BAGS],
+  shoes: ['Shoes'],
+  bags: [...BAG_TYPES],
+  occasions: [...JEWELRY, ...SHOES_AND_BAGS],
 }
 
 export function getSubcategoriesForCategories(categories: Category[]): string[] {

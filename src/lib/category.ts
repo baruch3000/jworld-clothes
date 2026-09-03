@@ -13,6 +13,9 @@ export function categoryToAudience(category: Category): Audience {
       return 'teen'
     case 'baby':
       return 'baby'
+    case 'bags':
+    case 'shoes':
+      return 'unisex'
     default:
       return 'unisex'
   }

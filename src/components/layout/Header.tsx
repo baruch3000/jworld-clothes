@@ -16,6 +16,7 @@ const NAV_CATEGORIES: Category[] = [
   'teen',
   'baby',
   'shoes',
+  'bags',
   'occasions',
   'brands',
   'sale',

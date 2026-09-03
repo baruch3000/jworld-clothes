@@ -6,6 +6,7 @@ export type Category =
   | 'teen'
   | 'baby'
   | 'shoes'
+  | 'bags'
   | 'occasions'
   | 'brands'
   | 'sale'
@@ -84,6 +85,7 @@ export const CATEGORY_LABELS: Record<Category, string> = {
   teen: 'Teen',
   baby: 'Baby',
   shoes: 'Shoes',
+  bags: 'Bags',
   occasions: 'Occasions / Events',
   brands: 'Brands',
   sale: 'Sale / Offers',
