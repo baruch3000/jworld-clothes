@@ -23,11 +23,18 @@ const BAG_TYPES = [
   'Crossbody & Clutches',
 ] as const
 
+const WOMEN_GIRLS_SUBCATEGORIES = [
+  ...BOYS_GIRLS_SHARED,
+  ...GIRLS_ONLY,
+  ...JEWELRY,
+  ...SHOES_AND_BAGS,
+] as const
+
 export const SUBCATEGORIES_BY_CATEGORY: Partial<Record<Category, readonly string[]>> = {
   men: [...SHOES_AND_BAGS],
-  women: [...JEWELRY, ...SHOES_AND_BAGS],
+  women: [...WOMEN_GIRLS_SUBCATEGORIES],
   boys: [...BOYS_GIRLS_SHARED, ...SHOES_AND_BAGS],
-  girls: [...BOYS_GIRLS_SHARED, ...GIRLS_ONLY, ...JEWELRY, ...SHOES_AND_BAGS],
+  girls: [...WOMEN_GIRLS_SUBCATEGORIES],
   teen: [...BOYS_GIRLS_SHARED, ...GIRLS_ONLY, ...SHOES_AND_BAGS],
   baby: [...BABY_ONLY, ...SHOES_AND_BAGS],
   shoes: ['Shoes'],
